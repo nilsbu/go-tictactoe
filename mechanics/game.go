@@ -27,13 +27,13 @@ type PlayerType int
 // players is larger than the total number.
 func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
 	if players < MinPlayers {
-		return nil, fmt.Errorf("Too few players: %v < %v", players, MinPlayers)
+		return nil, fmt.Errorf("too few players: %v < %v", players, MinPlayers)
 	}
 	if fieldSize < MinFieldSize {
-		return nil, fmt.Errorf("Field too small: %v < %v", fieldSize, MinFieldSize)
+		return nil, fmt.Errorf("field too small: %v < %v", fieldSize, MinFieldSize)
 	}
 	if players < humanPlayers {
-		return nil, fmt.Errorf("More humans than players: %v > %v", humanPlayers, players)
+		return nil, fmt.Errorf("more humans than players: %v > %v", humanPlayers, players)
 	}
 
 	playerArr := make([]PlayerType, players)

@@ -66,7 +66,7 @@ func (f Field) Put(pos Position, player Player) error {
 
 	p := pos[1]*f.Size + pos[0]
 	if f.Marks[p] != 0 {
-		return fmt.Errorf("Field already written: position = %v, value = %v",
+		return fmt.Errorf("field already written: position = %v, value = %v",
 			pos, f.Marks[p])
 	}
 

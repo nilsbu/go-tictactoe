@@ -20,7 +20,7 @@ func TestField_Put(t *testing.T) {
 	for i, table := range tables {
 		err := field.Put(table.pos, currentPlayer)
 		if (err == nil) != (table.err == nil) {
-			t.Errorf("Unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
+			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
 				i+1, table.err, err)
 			continue
 		}
@@ -28,7 +28,7 @@ func TestField_Put(t *testing.T) {
 			continue
 		}
 		if !field.Marks.Equal(table.post) {
-			t.Errorf("Field different in step %v:\nexpected:\n%v\n\nactual:\n%v",
+			t.Errorf("field different in step %v:\nexpected:\n%v\n\nactual:\n%v",
 				i+1, table.post, field)
 		}
 

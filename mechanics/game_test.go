@@ -25,7 +25,7 @@ func TestNewGame(t *testing.T) {
 	for _, table := range tables {
 		game, err := NewGame(table.fieldSize, len(table.players), table.humanPlayers)
 		if (err == nil) != (table.err == nil) {
-			t.Errorf("Unexpected error behavior: expected = \"%v\", actual = \"%v\"",
+			t.Errorf("unexpected error behavior: expected = \"%v\", actual = \"%v\"",
 				table.err, err)
 			continue
 		}
@@ -33,26 +33,26 @@ func TestNewGame(t *testing.T) {
 			continue
 		}
 		if len(game.Players) != len(table.players) {
-			t.Errorf("Number of players: expected = \"%v\", actual = \"%v\"",
+			t.Errorf("number of players: expected = \"%v\", actual = \"%v\"",
 				len(table.players), len(game.Players))
 		}
 		for i := 0; i < len(game.Players); i++ {
 			if game.Players[i] != table.players[i] {
-				t.Errorf("Player setup: expected = \"%v\", actual \"%v\"",
+				t.Errorf("player setup: expected = \"%v\", actual \"%v\"",
 					table.players, game.Players)
 				break
 			}
 		}
 		if len(game.Field.Marks) != table.fieldSize*table.fieldSize {
-			t.Errorf("Marks size: expected = \"%v\", actual = \"%v\"",
+			t.Errorf("marks size: expected = \"%v\", actual = \"%v\"",
 				table.fieldSize*table.fieldSize, len(game.Field.Marks))
 		}
 		if game.Field.Size != table.fieldSize {
-			t.Errorf("Field size: expected = \"%v\", actual = \"%v\"",
+			t.Errorf("field size: expected = \"%v\", actual = \"%v\"",
 				table.fieldSize, game.Field.Size)
 		}
 		if game.NextPlayer != 0 {
-			t.Errorf("Next player: expected = \"0\", actual = \"%v\"",
+			t.Errorf("next player: expected = \"0\", actual = \"%v\"",
 				game.NextPlayer)
 		}
 	}
@@ -73,14 +73,14 @@ func TestGame_Move2(t *testing.T) {
 
 	game, err := NewGame(3, 2, 0)
 	if err != nil {
-		t.Errorf("Game creation failed: %v", err)
+		t.Errorf("game creation failed: %v", err)
 		return
 	}
 
 	for i, table := range tables {
 		err := game.Move(table.pos, table.playerPre)
 		if (err == nil) != (table.err == nil) {
-			t.Errorf("Unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
+			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
 				i+1, table.err, err)
 			continue
 		}
@@ -88,11 +88,11 @@ func TestGame_Move2(t *testing.T) {
 			continue
 		}
 		if !game.Field.Marks.Equal(table.post) {
-			t.Errorf("Field different in step %v: expected = %v, actual = %v", i+1,
+			t.Errorf("field different in step %v: expected = %v, actual = %v", i+1,
 				table.post, game.Field.Marks)
 		}
 		if game.NextPlayer != table.playerPost {
-			t.Errorf("Next player wrong in step %v: expected = %v, actual = %v", i+1,
+			t.Errorf("next player wrong in step %v: expected = %v, actual = %v", i+1,
 				table.playerPost, game.NextPlayer)
 		}
 	}

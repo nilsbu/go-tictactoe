@@ -30,7 +30,7 @@ func TestGetWinner(t *testing.T) {
 		winner := GetWinner(field)
 
 		if table.winner != winner {
-			t.Errorf("Wrong winner in table %v: expected = %v, actual = %v", i+1,
+			t.Errorf("wrong winner in table %v: expected = %v, actual = %v", i+1,
 				table.winner, winner)
 		}
 	}

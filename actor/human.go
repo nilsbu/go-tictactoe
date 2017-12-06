@@ -51,7 +51,7 @@ func splitString(s string) (pos mechanics.Position, err error) {
 	split := strings.Split(s, ",")
 
 	if len(split) != 2 {
-		err = fmt.Errorf("Input must have contain two ints.")
+		err = fmt.Errorf("input must have contain two ints")
 		return
 	}
 

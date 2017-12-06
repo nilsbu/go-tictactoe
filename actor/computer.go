@@ -13,7 +13,7 @@ type Computer struct {
 
 // GetMove makes the next move for the computer player calling it.
 func (c *Computer) GetMove(field mechanics.Field) (mechanics.Position, error) {
-	return mechanics.Position{0, 0}, fmt.Errorf("Not implemented")
+	return mechanics.Position{0, 0}, fmt.Errorf("not implemented")
 }
 
 // computeOptimalMoveSeq finds the optimal move for the player.
