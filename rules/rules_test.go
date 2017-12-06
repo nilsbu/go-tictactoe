@@ -29,8 +29,8 @@ func TestGetWinner(t *testing.T) {
 	}
 
 	for i, table := range tables {
-		field := mechanics.Field{Marks: table.marks, Size: table.size}
-		winner, hasWinner := GetWinner(field)
+		b := mechanics.Board{Marks: table.marks, Size: table.size}
+		winner, hasWinner := GetWinner(b)
 
 		if table.winner == noWinner {
 			if hasWinner {

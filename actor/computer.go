@@ -13,7 +13,7 @@ type Computer struct {
 }
 
 // GetMove makes the next move for the computer player calling it.
-func (c *Computer) GetMove(field mechanics.Field) (mechanics.Position, error) {
+func (c *Computer) GetMove(b mechanics.Board) (mechanics.Position, error) {
 	return mechanics.Position{0, 0}, fmt.Errorf("not implemented")
 }
 

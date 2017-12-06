@@ -11,14 +11,14 @@ const (
 // a game.
 const MinPlayers = 2
 
-// MinFieldSize is the minimal board size required.
+// MinBoardSize is the minimal board size required.
 // There are this many columns and rows required.
-const MinFieldSize = 3
+const MinBoardSize = 3
 
 // Game holds the information about the current state of the game.
 type Game struct {
 	Players []PlayerType
-	Field   Field
+	Board   Board
 
 	NextPlayer Player
 }
@@ -28,14 +28,14 @@ type PlayerType int
 
 // NewGame initializes a Game.
 // An error is thrown when fewer than MinPlayers players are requested, when the
-// board is smaller MinFieldSize fields across or when the number of human
+// board is smaller MinBoardSize boards across or when the number of human
 // players is larger than the total number.
-func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
+func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 	if players < MinPlayers {
 		return nil, fmt.Errorf("too few players: %v < %v", players, MinPlayers)
 	}
-	if fieldSize < MinFieldSize {
-		return nil, fmt.Errorf("field too small: %v < %v", fieldSize, MinFieldSize)
+	if boardSize < MinBoardSize {
+		return nil, fmt.Errorf("board too small: %v < %v", boardSize, MinBoardSize)
 	}
 	if players < humanPlayers {
 		return nil, fmt.Errorf("more humans than players: %v > %v",
@@ -54,7 +54,7 @@ func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
 
 	return &Game{
 		playerArr,
-		Field{make(Marks, fieldSize*fieldSize), fieldSize},
+		Board{make(Marks, boardSize*boardSize), boardSize},
 		0,
 	}, nil
 }
@@ -68,7 +68,7 @@ func (g *Game) Move(pos Position, player Player) error {
 	}
 
 	// FIXME not checked for errors
-	g.Field.Put(pos, player)
+	g.Board.Put(pos, player)
 	g.NextPlayer = Player(int(g.NextPlayer+1) % len(g.Players))
 
 	return nil

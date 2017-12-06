@@ -2,7 +2,7 @@ package mechanics
 
 import "testing"
 
-func TestField_Put(t *testing.T) {
+func TestBoard_Put(t *testing.T) {
 	tables := []struct {
 		pos  Position
 		post Marks
@@ -14,11 +14,11 @@ func TestField_Put(t *testing.T) {
 		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, errAny},
 	}
 
-	var field = Field{make(Marks, 3*3), 3}
+	var b = Board{make(Marks, 3*3), 3}
 	var currentPlayer Player
 
 	for i, table := range tables {
-		err := field.Put(table.pos, currentPlayer)
+		err := b.Put(table.pos, currentPlayer)
 		if (err == nil) != (table.err == nil) {
 			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
 				i+1, table.err, err)
@@ -27,9 +27,9 @@ func TestField_Put(t *testing.T) {
 		if err != nil {
 			continue
 		}
-		if !field.Marks.Equal(table.post) {
-			t.Errorf("field different in step %v:\nexpected:\n%v\n\nactual:\n%v",
-				i+1, table.post, field)
+		if !b.Marks.Equal(table.post) {
+			t.Errorf("board different in step %v:\nexpected:\n%v\n\nactual:\n%v",
+				i+1, table.post, b)
 		}
 
 		currentPlayer = (currentPlayer + 1) % 2

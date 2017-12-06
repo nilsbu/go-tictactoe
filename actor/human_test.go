@@ -38,7 +38,7 @@ func TestSplitString(t *testing.T) {
 	}
 }
 
-func TestIsInField(t *testing.T) {
+func TestIsInBoard(t *testing.T) {
 	tables := []struct {
 		pos  mechanics.Position
 		size int
@@ -51,7 +51,7 @@ func TestIsInField(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		ok := isInField(table.pos, table.size)
+		ok := isInBoard(table.pos, table.size)
 		if table.ok != ok {
 			t.Errorf("position = %v with size = %v: expected = %v, actual = %v",
 				table.pos, table.size, table.ok, ok)

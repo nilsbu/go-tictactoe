@@ -9,7 +9,7 @@ var errAny = errors.New("Some Error")
 
 func TestNewGame(t *testing.T) {
 	tables := []struct {
-		fieldSize    int
+		boardSize    int
 		humanPlayers int
 		players      []PlayerType
 		err          error
@@ -23,7 +23,7 @@ func TestNewGame(t *testing.T) {
 	}
 
 	for _, table := range tables {
-		game, err := NewGame(table.fieldSize, len(table.players), table.humanPlayers)
+		game, err := NewGame(table.boardSize, len(table.players), table.humanPlayers)
 		if (err == nil) != (table.err == nil) {
 			t.Errorf("unexpected error behavior: expected = \"%v\", actual = \"%v\"",
 				table.err, err)
@@ -43,13 +43,13 @@ func TestNewGame(t *testing.T) {
 				break
 			}
 		}
-		if len(game.Field.Marks) != table.fieldSize*table.fieldSize {
+		if len(game.Board.Marks) != table.boardSize*table.boardSize {
 			t.Errorf("marks size: expected = \"%v\", actual = \"%v\"",
-				table.fieldSize*table.fieldSize, len(game.Field.Marks))
+				table.boardSize*table.boardSize, len(game.Board.Marks))
 		}
-		if game.Field.Size != table.fieldSize {
-			t.Errorf("field size: expected = \"%v\", actual = \"%v\"",
-				table.fieldSize, game.Field.Size)
+		if game.Board.Size != table.boardSize {
+			t.Errorf("board size: expected = \"%v\", actual = \"%v\"",
+				table.boardSize, game.Board.Size)
 		}
 		if game.NextPlayer != 0 {
 			t.Errorf("next player: expected = \"0\", actual = \"%v\"",
@@ -87,9 +87,9 @@ func TestGame_Move2(t *testing.T) {
 		if err != nil {
 			continue
 		}
-		if !game.Field.Marks.Equal(table.post) {
-			t.Errorf("field different in step %v: expected = %v, actual = %v", i+1,
-				table.post, game.Field.Marks)
+		if !game.Board.Marks.Equal(table.post) {
+			t.Errorf("board different in step %v: expected = %v, actual = %v", i+1,
+				table.post, game.Board.Marks)
 		}
 		if game.NextPlayer != table.playerPost {
 			t.Errorf("next player wrong in step %v: expected = %v, actual = %v", i+1,

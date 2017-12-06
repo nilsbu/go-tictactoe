@@ -8,5 +8,5 @@ import "go-tictactoe/mechanics"
 // GetMove provides the next move the player makes.
 // When it returns an error, the game is supposed to be aborted.
 type Actor interface {
-	GetMove(field mechanics.Field) (mechanics.Position, error)
+	GetMove(b mechanics.Board) (mechanics.Position, error)
 }

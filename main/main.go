@@ -15,12 +15,12 @@ func main() {
 
 	human := actor.Human{ID: 0}
 	for {
-		pos, err := human.GetMove(game.Field)
+		pos, err := human.GetMove(game.Board)
 		if err != nil {
 			break
 		}
 
 		game.Move(pos, game.NextPlayer)
-		fmt.Println(game.Field)
+		fmt.Println(game.Board)
 	}
 }

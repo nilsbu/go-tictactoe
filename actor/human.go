@@ -16,7 +16,7 @@ type Human struct {
 }
 
 // GetMove returns the move the player makes after prompting them for input.
-func (h *Human) GetMove(field mechanics.Field) (pos mechanics.Position, err error) {
+func (h *Human) GetMove(b mechanics.Board) (pos mechanics.Position, err error) {
 	// TODO There should be a method to quit the game here.
 	// TODO Test function
 	// TODO input in chess format (e.g. a1)
@@ -38,8 +38,8 @@ func (h *Human) GetMove(field mechanics.Field) (pos mechanics.Position, err erro
 			continue
 		}
 
-		if !isInField(pos, field.Size) {
-			fmt.Println("Entered position is not in field.")
+		if !isInBoard(pos, b.Size) {
+			fmt.Println("Entered position is not on board.")
 			continue
 		}
 
@@ -67,7 +67,7 @@ func splitString(s string) (pos mechanics.Position, err error) {
 	return
 }
 
-func isInField(pos mechanics.Position, size int) bool {
+func isInBoard(pos mechanics.Position, size int) bool {
 	for i := 0; i < 2; i++ {
 		if pos[i] < 0 || pos[i] >= size {
 			return false
