@@ -3,8 +3,6 @@ package mechanics
 import (
 	"fmt"
 	"strings"
-
-	"go-tictactoe/util"
 )
 
 // Symbols stores the marks that players make on the board.
@@ -58,17 +56,17 @@ func (f Field) String() string {
 // specified position, Put returns an error.
 func (f Field) Put(pos Position, player Player) error {
 	if pos[0] < 0 || pos[0] >= f.Size {
-		return util.NewError("x-position out of range, required: 0 <= %v < %v",
+		return fmt.Errorf("x-position out of range, required: 0 <= %v < %v",
 			pos[0], f.Size)
 	}
 	if pos[1] < 0 || pos[1] >= f.Size {
-		return util.NewError("y-position out of range, required: 0 <= %v < %v",
+		return fmt.Errorf("y-position out of range, required: 0 <= %v < %v",
 			pos[1], f.Size)
 	}
 
 	p := pos[1]*f.Size + pos[0]
 	if f.Marks[p] != 0 {
-		return util.NewError("Field already written: position = %v, value = %v",
+		return fmt.Errorf("Field already written: position = %v, value = %v",
 			pos, f.Marks[p])
 	}
 

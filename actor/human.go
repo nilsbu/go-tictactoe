@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"go-tictactoe/mechanics"
-	"go-tictactoe/util"
 )
 
 // Human represents a human player.
@@ -52,7 +51,7 @@ func splitString(s string) (pos mechanics.Position, err error) {
 	split := strings.Split(s, ",")
 
 	if len(split) != 2 {
-		err = util.NewError("Input must have contain two ints.")
+		err = fmt.Errorf("Input must have contain two ints.")
 		return
 	}
 

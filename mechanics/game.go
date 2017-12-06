@@ -1,6 +1,6 @@
 package mechanics
 
-import "go-tictactoe/util"
+import "fmt"
 
 const (
 	human PlayerType = iota
@@ -27,13 +27,13 @@ type PlayerType int
 // players is larger than the total number.
 func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
 	if players < MinPlayers {
-		return nil, util.NewError("Too few players: %v < %v", players, MinPlayers)
+		return nil, fmt.Errorf("Too few players: %v < %v", players, MinPlayers)
 	}
 	if fieldSize < MinFieldSize {
-		return nil, util.NewError("Field too small: %v < %v", fieldSize, MinFieldSize)
+		return nil, fmt.Errorf("Field too small: %v < %v", fieldSize, MinFieldSize)
 	}
 	if players < humanPlayers {
-		return nil, util.NewError("More humans than players: %v > %v", humanPlayers, players)
+		return nil, fmt.Errorf("More humans than players: %v > %v", humanPlayers, players)
 	}
 
 	playerArr := make([]PlayerType, players)
@@ -58,7 +58,7 @@ func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
 func (g *Game) Move(pos Position, player Player) error {
 	// TODO What about false moves?
 	if player != g.NextPlayer {
-		return util.NewError("Next move belongs to player %v", g.NextPlayer)
+		return fmt.Errorf("Next move belongs to player %v", g.NextPlayer)
 	}
 
 	// FIXME not checked for errors
