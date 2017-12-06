@@ -1,8 +1,9 @@
 package rules
 
 import (
-	"go-tictactoe/mechanics"
 	"testing"
+
+	"go-tictactoe/mechanics"
 )
 
 func TestGetWinner(t *testing.T) {

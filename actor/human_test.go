@@ -2,8 +2,9 @@ package actor
 
 import (
 	"errors"
-	"go-tictactoe/mechanics"
 	"testing"
+
+	"go-tictactoe/mechanics"
 )
 
 func TestSplitString(t *testing.T) {

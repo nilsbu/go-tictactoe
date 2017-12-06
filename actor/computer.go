@@ -2,6 +2,7 @@ package actor
 
 import (
 	"fmt"
+
 	"go-tictactoe/mechanics"
 )
 
