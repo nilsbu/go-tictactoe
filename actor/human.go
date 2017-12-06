@@ -18,6 +18,8 @@ type Human struct {
 // GetMove returns the move the player makes after prompting them for input.
 func (h *Human) GetMove(field mechanics.Field) (pos mechanics.Position, err error) {
 	// TODO There should be a method to quit the game here.
+	// TODO Test function
+	// TODO input in chess format (e.g. a1)
 	reader := bufio.NewReader(os.Stdin)
 
 	for {

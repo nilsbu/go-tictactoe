@@ -7,7 +7,12 @@ const (
 	computer
 )
 
+// MinPlayers is the minimal number of players, human or not, that are needed for
+// a game.
 const MinPlayers = 2
+
+// MinFieldSize is the minimal board size required.
+// There are this many columns and rows required.
 const MinFieldSize = 3
 
 // Game holds the information about the current state of the game.
@@ -33,7 +38,8 @@ func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
 		return nil, fmt.Errorf("field too small: %v < %v", fieldSize, MinFieldSize)
 	}
 	if players < humanPlayers {
-		return nil, fmt.Errorf("more humans than players: %v > %v", humanPlayers, players)
+		return nil, fmt.Errorf("more humans than players: %v > %v",
+			humanPlayers, players)
 	}
 
 	playerArr := make([]PlayerType, players)

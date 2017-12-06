@@ -2,28 +2,24 @@ package rules
 
 import "go-tictactoe/mechanics"
 
-// NoWinner is a return value for when there is no winner.
-const NoWinner = -1
-
 // GetWinner determines if there a player has won the game.
 // NoWinner is returned if this is not the case, otherwise the player's ID is
 // returned.
-func GetWinner(f mechanics.Field) mechanics.Player {
-	winner := getRowWinner(f)
-	// TODO A second return variable should be used to check if there is a winner.
-	if winner != NoWinner {
-		return winner
+func GetWinner(f mechanics.Field) (id mechanics.Player, hasWinner bool) {
+	id, hasWinner = getRowWinner(f)
+	if hasWinner {
+		return
 	}
 
-	winner = getColumnWinner(f)
-	if winner != NoWinner {
-		return winner
+	id, hasWinner = getColumnWinner(f)
+	if hasWinner {
+		return
 	}
 
 	return getDiagonalWinner(f)
 }
 
-func getRowWinner(field mechanics.Field) (winner mechanics.Player) {
+func getRowWinner(field mechanics.Field) (id mechanics.Player, hasWinner bool) {
 	for y := 0; y < field.Size; y++ {
 		if field.Marks[y*field.Size] == 0 {
 			continue
@@ -36,14 +32,14 @@ func getRowWinner(field mechanics.Field) (winner mechanics.Player) {
 			}
 		}
 		if x == field.Size {
-			return field.Marks[y*field.Size]
+			return field.Marks[y*field.Size], true
 		}
 	}
 
-	return NoWinner
+	return 0, false
 }
 
-func getColumnWinner(field mechanics.Field) (winner mechanics.Player) {
+func getColumnWinner(field mechanics.Field) (id mechanics.Player, hasWinner bool) {
 	for x := 0; x < field.Size; x++ {
 		if field.Marks[x] == 0 {
 			continue
@@ -56,21 +52,21 @@ func getColumnWinner(field mechanics.Field) (winner mechanics.Player) {
 			}
 		}
 		if y == field.Size {
-			return field.Marks[x]
+			return field.Marks[x], true
 		}
 	}
 
-	return NoWinner
+	return 0, false
 }
 
-func getDiagonalWinner(field mechanics.Field) (winner mechanics.Player) {
+func getDiagonalWinner(field mechanics.Field) (id mechanics.Player, hasWinner bool) {
 	if field.Marks[0] != 0 {
 		for xy := 1; xy < field.Size; xy++ {
 			if field.Marks[xy*field.Size+xy] != field.Marks[0] {
 				break
 			}
 			if xy == field.Size-1 {
-				return field.Marks[0]
+				return field.Marks[0], true
 			}
 		}
 	}
@@ -81,10 +77,10 @@ func getDiagonalWinner(field mechanics.Field) (winner mechanics.Player) {
 				break
 			}
 			if xy == field.Size-1 {
-				return field.Marks[field.Size-1]
+				return field.Marks[field.Size-1], true
 			}
 		}
 	}
 
-	return NoWinner
+	return 0, false
 }
