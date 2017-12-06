@@ -24,7 +24,8 @@ func TestSplitString(t *testing.T) {
 	for _, table := range tables {
 		pos, err := splitString(table.s)
 		if (table.err == nil) != (err == nil) {
-			t.Errorf("Unexpected error behavior: expected = \"%v\", actual = \"%v\"", table.err, err)
+			t.Errorf("Unexpected error behavior: expected = \"%v\", actual = \"%v\"",
+				table.err, err)
 			continue
 		}
 		if err != nil {
@@ -51,7 +52,8 @@ func TestIsInField(t *testing.T) {
 	for _, table := range tables {
 		ok := isInField(table.pos, table.size)
 		if table.ok != ok {
-			t.Errorf("position = %v with size = %v: expected = %v, actual = %v", table.pos, table.size, table.ok, ok)
+			t.Errorf("position = %v with size = %v: expected = %v, actual = %v",
+				table.pos, table.size, table.ok, ok)
 		}
 	}
 }

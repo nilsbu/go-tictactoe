@@ -7,9 +7,10 @@ const (
 	computer
 )
 
-const minPlayers = 2
-const minFieldSize = 3
+const MinPlayers = 2
+const MinFieldSize = 3
 
+// Game holds the information about the current state of the game.
 type Game struct {
 	Players []PlayerType
 	Field   Field
@@ -17,14 +18,19 @@ type Game struct {
 	NextPlayer Player
 }
 
+// PlayerType differentiates between human and computer players.
 type PlayerType int
 
-func NewGame(fieldSize, players, humanPlayers int) (game *Game, err error) {
-	if players < minPlayers {
-		return nil, util.NewError("Too few players: %v < %v", players, minPlayers)
+// NewGame initializes a Game.
+// An error is thrown when fewer than MinPlayers players are requested, when the
+// board is smaller MinFieldSize fields across or when the number of human
+// players is larger than the total number.
+func NewGame(fieldSize, players, humanPlayers int) (*Game, error) {
+	if players < MinPlayers {
+		return nil, util.NewError("Too few players: %v < %v", players, MinPlayers)
 	}
-	if fieldSize < minFieldSize {
-		return nil, util.NewError("Field too small: %v < %v", fieldSize, minFieldSize)
+	if fieldSize < MinFieldSize {
+		return nil, util.NewError("Field too small: %v < %v", fieldSize, MinFieldSize)
 	}
 	if players < humanPlayers {
 		return nil, util.NewError("More humans than players: %v > %v", humanPlayers, players)
@@ -47,13 +53,17 @@ func NewGame(fieldSize, players, humanPlayers int) (game *Game, err error) {
 	}, nil
 }
 
-func (game *Game) Move(pos Position, player Player) error {
-	if player != game.NextPlayer {
-		return util.NewError("Next move belongs to player %v", game.NextPlayer)
+// Move adds a players move to the board.
+// It is checked if the next move belongs to the player.
+func (g *Game) Move(pos Position, player Player) error {
+	// TODO What about false moves?
+	if player != g.NextPlayer {
+		return util.NewError("Next move belongs to player %v", g.NextPlayer)
 	}
 
-	game.Field.Put(pos, player)
-	game.NextPlayer = Player(int(game.NextPlayer+1) % len(game.Players))
+	// FIXME not checked for errors
+	g.Field.Put(pos, player)
+	g.NextPlayer = Player(int(g.NextPlayer+1) % len(g.Players))
 
 	return nil
 }

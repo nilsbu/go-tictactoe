@@ -1,26 +1,31 @@
 package actor
 
 import (
-	"go-tictactoe/mechanics"
-	"go-tictactoe/util"
 	"bufio"
 	"fmt"
 	"os"
 	"strconv"
 	"strings"
+
+	"go-tictactoe/mechanics"
+	"go-tictactoe/util"
 )
 
+// Human represents a human player.
 type Human struct {
 	ID mechanics.Player
 }
 
+// GetMove returns the move the player makes after prompting them for input.
 func (h *Human) GetMove(field mechanics.Field) (pos mechanics.Position, err error) {
+	// TODO There should be a method to quit the game here.
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
 		fmt.Printf("Next move, player %v: ", h.ID+1)
 
-		text, err := reader.ReadString('\n')
+		var text string
+		text, err = reader.ReadString('\n')
 		if err != nil {
 			fmt.Println(err)
 			continue
@@ -39,7 +44,8 @@ func (h *Human) GetMove(field mechanics.Field) (pos mechanics.Position, err erro
 
 		break
 	}
-	return
+
+	return pos, err
 }
 
 func splitString(s string) (pos mechanics.Position, err error) {

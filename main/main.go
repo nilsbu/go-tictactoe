@@ -1,18 +1,19 @@
 package main
 
 import (
+	"fmt"
+
 	"go-tictactoe/actor"
 	"go-tictactoe/mechanics"
-	"fmt"
 )
 
 func main() {
 	game, err := mechanics.NewGame(3, 2, 2)
 	if err != nil {
-		fmt.Errorf("%v", err)
+		fmt.Println(err)
 	}
 
-	human := actor.Human{0}
+	human := actor.Human{ID: 0}
 	for {
 		pos, err := human.GetMove(game.Field)
 		if err != nil {

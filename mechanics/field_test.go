@@ -10,24 +10,26 @@ func TestField_Put(t *testing.T) {
 	}{
 		{[2]int{0, 0}, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, nil},
 		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, nil},
-		{[2]int{4, 2}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, someError},
-		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, someError},
+		{[2]int{4, 2}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, errAny},
+		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, errAny},
 	}
 
 	var field = Field{make(Marks, 3*3), 3}
-	var currentPlayer Player = 0
+	var currentPlayer Player
 
 	for i, table := range tables {
 		err := field.Put(table.pos, currentPlayer)
 		if (err == nil) != (table.err == nil) {
-			t.Errorf("Unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"", i+1, table.err, err)
+			t.Errorf("Unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
+				i+1, table.err, err)
 			continue
 		}
 		if err != nil {
 			continue
 		}
 		if !field.Marks.Equal(table.post) {
-			t.Errorf("Field different in step %v:\nexpected:\n%v\n\nactual:\n%v", i+1, table.post, field)
+			t.Errorf("Field different in step %v:\nexpected:\n%v\n\nactual:\n%v",
+				i+1, table.post, field)
 		}
 
 		currentPlayer = (currentPlayer + 1) % 2

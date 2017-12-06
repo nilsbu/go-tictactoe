@@ -26,11 +26,12 @@ func TestGetWinner(t *testing.T) {
 	}
 
 	for i, table := range tables {
-		field := mechanics.Field{table.marks, table.size}
+		field := mechanics.Field{Marks: table.marks, Size: table.size}
 		winner := GetWinner(field)
 
 		if table.winner != winner {
-			t.Errorf("Wrong winner in table %v: expected = %v, actual = %v", i+1, table.winner, winner)
+			t.Errorf("Wrong winner in table %v: expected = %v, actual = %v", i+1,
+				table.winner, winner)
 		}
 	}
 }

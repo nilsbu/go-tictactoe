@@ -2,20 +2,25 @@ package rules
 
 import "go-tictactoe/mechanics"
 
+// NoWinner is a return value for when there is no winner.
 const NoWinner = -1
 
-func GetWinner(field mechanics.Field) (winner mechanics.Player) {
-	winner = getRowWinner(field)
+// GetWinner determines if there a player has won the game.
+// NoWinner is returned if this is not the case, otherwise the player's ID is
+// returned.
+func GetWinner(f mechanics.Field) mechanics.Player {
+	winner := getRowWinner(f)
+	// TODO A second return variable should be used to check if there is a winner.
 	if winner != NoWinner {
-		return
+		return winner
 	}
 
-	winner = getColumnWinner(field)
+	winner = getColumnWinner(f)
 	if winner != NoWinner {
-		return
+		return winner
 	}
 
-	return getDiagonalWinner(field)
+	return getDiagonalWinner(f)
 }
 
 func getRowWinner(field mechanics.Field) (winner mechanics.Player) {
