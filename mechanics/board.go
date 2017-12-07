@@ -1,6 +1,7 @@
 package mechanics
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -53,23 +54,28 @@ func (b Board) String() string {
 // Put makes a mark for a player on the board.
 // If the position is not on the board or a mark has already been made at the
 // specified position, Put returns an error.
-func (b Board) Put(pos Position, player Player) error {
-	if pos[0] < 0 || pos[0] >= b.Size {
-		return fmt.Errorf("x-position out of range, required: 0 <= %v < %v",
-			pos[0], b.Size)
-	}
-	if pos[1] < 0 || pos[1] >= b.Size {
-		return fmt.Errorf("y-position out of range, required: 0 <= %v < %v",
-			pos[1], b.Size)
+func (b Board) Put(p Position, player Player) error {
+	if ok, reason := b.IsWritable(p); ok == false {
+		return errors.New(reason)
 	}
 
-	p := pos[1]*b.Size + pos[0]
-	if b.Marks[p] != 0 {
-		return fmt.Errorf("board already written: position = %v, value = %v",
-			pos, b.Marks[p])
-	}
-
-	b.Marks[p] = Player(player + 1)
-
+	b.Marks[p[1]*b.Size+p[0]] = Player(player + 1)
 	return nil
+}
+
+// IsWritable checks is a position can be written in.
+// It has to be within the limits of the board and empty.
+// If the position is not writable a reason is given.
+func (b Board) IsWritable(p Position) (ok bool, reason string) {
+	if p[0] < 0 || p[0] >= b.Size || p[1] < 0 || p[1] >= b.Size {
+		return false, fmt.Sprintf("position out of range, board has size %vx%v",
+			b.Size, b.Size)
+	}
+
+	idx := p[1]*b.Size + p[0]
+	if b.Marks[idx] != 0 {
+		return false, fmt.Sprintf("position is not empty")
+	}
+
+	return true, ""
 }

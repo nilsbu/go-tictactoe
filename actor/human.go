@@ -2,6 +2,7 @@ package actor
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -16,63 +17,49 @@ type Human struct {
 }
 
 // GetMove returns the move the player makes after prompting them for input.
-func (h *Human) GetMove(b mechanics.Board) (pos mechanics.Position, err error) {
-	// TODO There should be a method to quit the game here.
-	// TODO Test function
+func (h *Human) GetMove(b mechanics.Board) (mechanics.Position, error) {
 	// TODO input in chess format (e.g. a1)
-	reader := bufio.NewReader(os.Stdin)
+	scanner := bufio.NewScanner(os.Stdin)
 
-	for {
-		fmt.Printf("Next move, player %v: ", h.ID+1)
+	fmt.Printf("Your move, player %v:\n", h.ID+1)
 
-		var text string
-		text, err = reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-			continue
+	for scanner.Scan() {
+		pos, msg, err := isAcceptableMove(b, scanner.Text())
+		if err != nil || msg == "" {
+			return pos, err
 		}
 
-		pos, err = splitString(text)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-
-		if !isInBoard(pos, b.Size) {
-			fmt.Println("Entered position is not on board.")
-			continue
-		}
-
-		break
+		fmt.Println(msg)
 	}
-
-	return pos, err
+	if err := scanner.Err(); err != nil {
+		return mechanics.Position{0, 0}, err
+	}
+	return mechanics.Position{0, 0}, errors.New("gathering input failed unexpectedly")
 }
 
-func splitString(s string) (pos mechanics.Position, err error) {
+func isAcceptableMove(b mechanics.Board, s string) (pos mechanics.Position, msg string, err error) {
+	s = strings.Trim(s, " ")
+	if s == "quit" || s == "exit" {
+		return mechanics.Position{0, 0}, "", errors.New("quit")
+	}
+
 	split := strings.Split(s, ",")
 
 	if len(split) != 2 {
-		err = fmt.Errorf("input must have contain two ints")
-		return
+		return mechanics.Position{0, 0}, "input must have contain two ints", nil
 	}
 
+	var err2 error
 	for i := 0; i < 2; i++ {
-		pos[i], err = strconv.Atoi(strings.Trim(split[i], " \n"))
-		if err != nil {
-			return
+		pos[i], err2 = strconv.Atoi(strings.Trim(split[i], " \n"))
+		if err2 != nil {
+			return mechanics.Position{0, 0}, "both parameters must be numbers", nil
 		}
 	}
 
-	return
-}
-
-func isInBoard(pos mechanics.Position, size int) bool {
-	for i := 0; i < 2; i++ {
-		if pos[i] < 0 || pos[i] >= size {
-			return false
-		}
+	if ok, reason := b.IsWritable(pos); ok == false {
+		return mechanics.Position{0, 0}, reason, nil
 	}
 
-	return true
+	return pos, "", nil
 }
