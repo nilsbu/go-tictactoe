@@ -2,13 +2,8 @@ package mechanics
 
 import "fmt"
 
-const (
-	human PlayerType = iota
-	computer
-)
-
-// MinPlayers is the minimal number of players, human or not, that are needed for
-// a game.
+// MinPlayers is the minimal number of players, human or not, that are needed
+// for a game.
 const MinPlayers = 2
 
 // MinBoardSize is the minimal board size required.
@@ -25,6 +20,13 @@ type Game struct {
 
 // PlayerType differentiates between human and computer players.
 type PlayerType int
+
+// Human and Computer are PlayerTypes that donote human and computer players
+// respectively.
+const (
+	Human PlayerType = iota
+	Computer
+)
 
 // NewGame initializes a Game.
 // An error is thrown when fewer than MinPlayers players are requested, when the
@@ -46,10 +48,10 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 
 	i := 0
 	for ; i < humanPlayers; i++ {
-		playerArr[i] = human
+		playerArr[i] = Human
 	}
 	for ; i < players; i++ {
-		playerArr[i] = computer
+		playerArr[i] = Computer
 	}
 
 	return &Game{

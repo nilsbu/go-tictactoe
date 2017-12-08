@@ -33,10 +33,13 @@ func (h *Human) GetMove(b mechanics.Board) (mechanics.Position, error) {
 	if err := scanner.Err(); err != nil {
 		return mechanics.Position{0, 0}, err
 	}
-	return mechanics.Position{0, 0}, errors.New("gathering input failed unexpectedly")
+	return mechanics.Position{0, 0},
+		errors.New("gathering input failed unexpectedly")
 }
 
-func isAcceptableMove(b mechanics.Board, s string) (pos mechanics.Position, msg string, err error) {
+func isAcceptableMove(b mechanics.Board, s string) (pos mechanics.Position,
+	msg string, err error) {
+
 	s = strings.Trim(s, " ")
 	if s == "quit" || s == "exit" {
 		return mechanics.Position{0, 0}, "", errors.New("quit")

@@ -79,3 +79,14 @@ func (b Board) IsWritable(p Position) (ok bool, reason string) {
 
 	return true, ""
 }
+
+func fun(x int) int {
+	switch y := 2; {
+	case x == y:
+		return 1
+	case x < 3:
+		return 2
+	default:
+		return 3
+	}
+}

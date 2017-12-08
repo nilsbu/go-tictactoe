@@ -6,8 +6,10 @@ import (
 	"go-tictactoe/mechanics"
 )
 
+type moveCode int
+
 const (
-	ok = iota
+	ok moveCode = iota
 	fail
 	quit
 )
@@ -19,7 +21,7 @@ func TestIsAcceptableMove(t *testing.T) {
 	tables := []struct {
 		input  string
 		pos    mechanics.Position
-		status int
+		status moveCode
 	}{
 		{"quit", mechanics.Position{0, 0}, quit},
 		{"exit ", mechanics.Position{0, 0}, quit},
@@ -38,37 +40,25 @@ func TestIsAcceptableMove(t *testing.T) {
 	}
 
 	for i, table := range tables {
-		pos, msg, err := isAcceptableMove(b, table.input)
-
-		if table.status == quit {
-			if err == nil {
-				t.Errorf("error expected in step %v but not returned", i+1)
-			} else if msg != "" {
-				t.Errorf("message has to be \"\" in step %v since quit is requested", i+1)
-			}
-			continue
-		}
-		if err != nil {
-			if table.status != quit {
-				t.Errorf("no error expected in step %v but was returned", i+1)
-			}
-			continue
-		}
-		if table.status == fail {
-			if msg == "" {
-				t.Errorf("expected failure in step %v but passed", i+1)
-			}
-			continue
-		}
-		if msg != "" {
-			if table.status != fail {
-				t.Errorf("failed unexpectedly in step %v", i+1)
-			}
-			continue
-		}
-		if table.pos != pos {
+		switch pos, msg, err := isAcceptableMove(b, table.input); {
+		case table.status == quit && err == nil:
+			t.Errorf("error expected in step %v but not returned", i+1)
+		case table.status == quit && msg != "":
+			t.Errorf("message has to be \"\" in step %v since quit is requested", i+1)
+		case table.status == quit:
+		case table.status != quit && err != nil:
+			t.Errorf("no error expected in step %v but was returned", i+1)
+		case err != nil:
+		case table.status == fail && msg == "":
+			t.Errorf("expected failure in step %v but passed", i+1)
+		case table.status == fail:
+		case table.status != fail && msg != "":
+			t.Errorf("failed unexpectedly in step %v", i+1)
+		case msg != "":
+		case table.pos != pos:
 			t.Errorf("false position in step %v, expected = %v, actual = %v",
 				i+1, table.pos, pos)
+		default:
 		}
 	}
 }

@@ -13,12 +13,12 @@ func TestNewGame(t *testing.T) {
 		players      []PlayerType
 		err          util.ErrorAnticipation
 	}{
-		{3, 2, []PlayerType{human, human}, util.NoError},
-		{4, 1, []PlayerType{human, computer}, util.NoError},
-		{5, 0, []PlayerType{computer, computer, computer}, util.NoError},
-		{3, 1, []PlayerType{human}, util.AnyError},
-		{2, 1, []PlayerType{human, computer}, util.AnyError},
-		{3, 3, []PlayerType{human, human}, util.AnyError},
+		{3, 2, []PlayerType{Human, Human}, util.NoError},
+		{4, 1, []PlayerType{Human, Computer}, util.NoError},
+		{5, 0, []PlayerType{Computer, Computer, Computer}, util.NoError},
+		{3, 1, []PlayerType{Human}, util.AnyError},
+		{2, 1, []PlayerType{Human, Computer}, util.AnyError},
+		{3, 3, []PlayerType{Human, Human}, util.AnyError},
 	}
 
 	for _, table := range tables {

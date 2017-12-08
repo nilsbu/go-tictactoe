@@ -22,21 +22,18 @@ func TestBoard_Put(t *testing.T) {
 	var currentPlayer Player
 
 	for i, table := range tables {
-		err := b.Put(table.pos, currentPlayer)
-		if (err == nil) != (table.err == util.NoError) {
-			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
-				i+1, table.err, err)
-			continue
+		switch err := b.Put(table.pos, currentPlayer); {
+		case (err == nil) != (table.err == util.NoError):
+			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", "+
+				"actual = \"%v\"", i+1, table.err, err)
+		case err != nil:
+		default:
+			if !b.Marks.Equal(table.post) {
+				t.Errorf("board different in step %v:\nexpected:\n%v\n\nactual:\n%v",
+					i+1, table.post, b)
+			}
+			currentPlayer = (currentPlayer + 1) % 2
 		}
-		if err != nil {
-			continue
-		}
-		if !b.Marks.Equal(table.post) {
-			t.Errorf("board different in step %v:\nexpected:\n%v\n\nactual:\n%v",
-				i+1, table.post, b)
-		}
-
-		currentPlayer = (currentPlayer + 1) % 2
 	}
 }
 
