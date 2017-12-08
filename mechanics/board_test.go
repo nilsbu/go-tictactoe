@@ -1,17 +1,21 @@
 package mechanics
 
-import "testing"
+import (
+	"testing"
+
+	"go-tictactoe/util"
+)
 
 func TestBoard_Put(t *testing.T) {
 	tables := []struct {
 		pos  Position
 		post Marks
-		err  error
+		err  util.ErrorAnticipation
 	}{
-		{[2]int{0, 0}, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, nil},
-		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, nil},
-		{[2]int{4, 2}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, errAny},
-		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, errAny},
+		{[2]int{0, 0}, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, util.NoError},
+		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.NoError},
+		{[2]int{4, 2}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.AnyError},
+		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.AnyError},
 	}
 
 	var b = Board{make(Marks, 3*3), 3}
@@ -19,7 +23,7 @@ func TestBoard_Put(t *testing.T) {
 
 	for i, table := range tables {
 		err := b.Put(table.pos, currentPlayer)
-		if (err == nil) != (table.err == nil) {
+		if (err == nil) != (table.err == util.NoError) {
 			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
 				i+1, table.err, err)
 			continue

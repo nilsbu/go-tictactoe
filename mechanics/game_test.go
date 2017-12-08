@@ -1,30 +1,29 @@
 package mechanics
 
 import (
-	"errors"
 	"testing"
-)
 
-var errAny = errors.New("Some Error")
+	"go-tictactoe/util"
+)
 
 func TestNewGame(t *testing.T) {
 	tables := []struct {
 		boardSize    int
 		humanPlayers int
 		players      []PlayerType
-		err          error
+		err          util.ErrorAnticipation
 	}{
-		{3, 2, []PlayerType{human, human}, nil},
-		{4, 1, []PlayerType{human, computer}, nil},
-		{5, 0, []PlayerType{computer, computer, computer}, nil},
-		{3, 1, []PlayerType{human}, errAny},
-		{2, 1, []PlayerType{human, computer}, errAny},
-		{3, 3, []PlayerType{human, human}, errAny},
+		{3, 2, []PlayerType{human, human}, util.NoError},
+		{4, 1, []PlayerType{human, computer}, util.NoError},
+		{5, 0, []PlayerType{computer, computer, computer}, util.NoError},
+		{3, 1, []PlayerType{human}, util.AnyError},
+		{2, 1, []PlayerType{human, computer}, util.AnyError},
+		{3, 3, []PlayerType{human, human}, util.AnyError},
 	}
 
 	for _, table := range tables {
 		game, err := NewGame(table.boardSize, len(table.players), table.humanPlayers)
-		if (err == nil) != (table.err == nil) {
+		if (err == nil) != (table.err == util.NoError) {
 			t.Errorf("unexpected error behavior: expected = \"%v\", actual = \"%v\"",
 				table.err, err)
 			continue
@@ -64,11 +63,11 @@ func TestGame_Move2(t *testing.T) {
 		playerPre  Player
 		playerPost Player
 		post       Marks
-		err        error
+		err        util.ErrorAnticipation
 	}{
-		{[2]int{0, 0}, 0, 1, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, nil},
-		{[2]int{1, 1}, 1, 0, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, nil},
-		{[2]int{4, 2}, 1, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, errAny},
+		{[2]int{0, 0}, 0, 1, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, util.NoError},
+		{[2]int{1, 1}, 1, 0, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.NoError},
+		{[2]int{4, 2}, 1, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.AnyError},
 	}
 
 	game, err := NewGame(3, 2, 0)
@@ -79,7 +78,7 @@ func TestGame_Move2(t *testing.T) {
 
 	for i, table := range tables {
 		err := game.Move(table.pos, table.playerPre)
-		if (err == nil) != (table.err == nil) {
+		if (err == nil) != (table.err == util.NoError) {
 			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
 				i+1, table.err, err)
 			continue
