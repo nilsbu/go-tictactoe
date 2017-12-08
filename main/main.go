@@ -20,7 +20,7 @@ func main() {
 			break
 		}
 
-		game.Move(pos, game.NextPlayer)
+		game.Move(pos, game.CurrentPlayer.Next)
 		fmt.Println(game.Board)
 	}
 }

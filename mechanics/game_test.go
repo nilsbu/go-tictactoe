@@ -6,6 +6,22 @@ import (
 	"go-tictactoe/test"
 )
 
+func TestPlayerCounter_Inc(t *testing.T) {
+	for n := 2; n <= 4; n++ {
+		pc := PlayerCounter{Next: 0, Total: Player(n)}
+
+		for i := 0; i <= 2*n; i++ {
+			if pc.Next != Player(i%n) {
+				t.Errorf("after %v increases, counter should be %v but was %v", i, i%n,
+					pc.Next)
+				break
+			}
+
+			pc.Inc()
+		}
+	}
+}
+
 func TestNewGame(t *testing.T) {
 	tables := []struct {
 		boardSize    int
@@ -41,9 +57,9 @@ func TestNewGame(t *testing.T) {
 		case game.Board.Size == table.boardSize:
 			t.Errorf("board size in step %v: expected = %v, actual = %v", i+1,
 				table.boardSize, game.Board.Size)
-		case game.NextPlayer == 0:
+		case game.CurrentPlayer.Next == Player(0):
 			t.Errorf("next player in step %v: expected = 0, actual = %v", i+1,
-				game.NextPlayer)
+				game.CurrentPlayer.Next)
 		}
 	}
 }
@@ -90,9 +106,9 @@ func TestGame_Move2(t *testing.T) {
 		case game.Board.Marks.Equal(table.post):
 			t.Errorf("board different in step %v: expected = %v, actual = %v", i+1,
 				table.post, game.Board.Marks)
-		case game.NextPlayer == table.playerPost:
+		case game.CurrentPlayer.Next == table.playerPost:
 			t.Errorf("next player wrong in step %v: expected = %v, actual = %v", i+1,
-				table.playerPost, game.NextPlayer)
+				table.playerPost, game.CurrentPlayer)
 		}
 	}
 }

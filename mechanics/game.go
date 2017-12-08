@@ -18,7 +18,7 @@ type Game struct {
 	Players []PlayerType
 	Board   Board
 
-	NextPlayer Player
+	CurrentPlayer PlayerCounter
 }
 
 // PlayerType differentiates between human and computer players.
@@ -30,6 +30,20 @@ const (
 	Human PlayerType = iota
 	Computer
 )
+
+// PlayerCounter is a counter that provides the ID of the next plauer.
+type PlayerCounter struct {
+	// Next is the ID of the next player.
+	Next Player
+	// Total is the number of players.
+	Total Player
+}
+
+// Inc moves the counter on to the next player.
+// If the last player was reached it starts with the first player.
+func (pc *PlayerCounter) Inc() {
+	pc.Next = (pc.Next + Player(1)) % pc.Total
+}
 
 // NewGame initializes a Game.
 // An error is thrown when fewer than MinPlayers players are requested, when the
@@ -60,7 +74,7 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 	return &Game{
 		playerArr,
 		Board{make(Marks, boardSize*boardSize), boardSize},
-		0,
+		PlayerCounter{Next: Player(0), Total: Player(players)},
 	}, nil
 }
 
@@ -68,8 +82,8 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 // It is checked if the next move belongs to the player.
 func (g *Game) Move(pos Position, player Player) error {
 	// TODO What about false moves?
-	if player != g.NextPlayer {
-		return fmt.Errorf("next move belongs to player %v", g.NextPlayer)
+	if player != g.CurrentPlayer.Next {
+		return fmt.Errorf("next move belongs to player %v", g.CurrentPlayer.Next)
 	}
 
 	if ok, reason := g.Board.IsWritable(pos); !ok {
@@ -77,7 +91,7 @@ func (g *Game) Move(pos Position, player Player) error {
 	}
 
 	g.Board.Put(pos, player)
-	g.NextPlayer = Player(int(g.NextPlayer+1) % len(g.Players))
+	g.CurrentPlayer.Inc()
 
 	return nil
 }

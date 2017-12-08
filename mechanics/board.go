@@ -30,11 +30,11 @@ type Marks []Player
 // The top-left corner is (0, 0).
 type Position [2]int
 
-// Player is the ID of a player.
-type Player int // IDEA increment function with modulo
+// Player is the ID of a player or the number of players.
+type Player int
 
 func (b Board) String() string {
-
+	// TODO move this to another place
 	s := strings.Repeat("-", 2*b.Size+1) + "\n"
 
 	for y := 0; y < b.Size; y++ {
