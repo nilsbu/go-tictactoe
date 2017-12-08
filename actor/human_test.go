@@ -35,9 +35,9 @@ func TestIsAcceptableMove(t *testing.T) {
 		{"1,0", mechanics.Position{1, 0}, ok},
 		{"1,01", mechanics.Position{1, 1}, ok},
 		{"2, 1", mechanics.Position{2, 1}, ok},
-		{"3,2", mechanics.Position{0, 0}, fail}, // out of bounds
-		{"0,1", mechanics.Position{0, 0}, fail}, // field not free
-		// no need to test bounds and written fields, see board tests
+		{"3,2", mechanics.Position{0, 0}, fail}, // Out of bounds
+		{"0,1", mechanics.Position{0, 0}, fail}, // Field not free
+		// No need to test bounds and written fields, see board tests
 	}
 
 	for i, table := range tables {

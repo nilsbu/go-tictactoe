@@ -21,42 +21,44 @@ func TestNewGame(t *testing.T) {
 		{3, 3, []PlayerType{Human, Human}, test.AnyError},
 	}
 
-	for _, table := range tables {
-		game, err := NewGame(table.boardSize, len(table.players), table.humanPlayers)
-		if (err == nil) != (table.err == test.NoError) {
-			t.Errorf("unexpected error behavior: expected = \"%v\", actual = \"%v\"",
-				table.err, err)
-			continue
-		}
-		if err != nil {
-			continue
-		}
-		if len(game.Players) != len(table.players) {
-			t.Errorf("number of players: expected = \"%v\", actual = \"%v\"",
+	for i, table := range tables {
+		switch game, err :=
+			NewGame(table.boardSize, len(table.players), table.humanPlayers); false {
+		case test.Cond(table.err == test.AnyError, err != nil):
+			t.Errorf("expected error in step %v but none was returned", i+1)
+		case test.Cond(table.err == test.NoError, err == nil):
+			t.Errorf("no error expected in step %v but one was returned", i+1)
+		case table.err == test.NoError:
+		case len(game.Players) == len(table.players):
+			t.Errorf("number of players in step %v: expected = %v, actual = %v", i+1,
 				len(table.players), len(game.Players))
-		}
-		for i := 0; i < len(game.Players); i++ {
-			if game.Players[i] != table.players[i] {
-				t.Errorf("player setup: expected = \"%v\", actual \"%v\"",
-					table.players, game.Players)
-				break
-			}
-		}
-		if len(game.Board.Marks) != table.boardSize*table.boardSize {
-			t.Errorf("marks size: expected = \"%v\", actual = \"%v\"",
+		case equals(table.players, game.Players):
+			t.Errorf("player setup in step %v: expected = %v, actual %v", i+1,
+				table.players, game.Players)
+		case len(game.Board.Marks) == table.boardSize*table.boardSize:
+			t.Errorf("marks size in step %v: expected = %v, actual = %v", i+1,
 				table.boardSize*table.boardSize, len(game.Board.Marks))
-		}
-		if game.Board.Size != table.boardSize {
-			t.Errorf("board size: expected = \"%v\", actual = \"%v\"",
+		case game.Board.Size == table.boardSize:
+			t.Errorf("board size in step %v: expected = %v, actual = %v", i+1,
 				table.boardSize, game.Board.Size)
-		}
-		if game.NextPlayer != 0 {
-			t.Errorf("next player: expected = \"0\", actual = \"%v\"",
+		case game.NextPlayer == 0:
+			t.Errorf("next player in step %v: expected = 0, actual = %v", i+1,
 				game.NextPlayer)
 		}
 	}
 }
 
+func equals(ps []PlayerType, os []PlayerType) bool {
+	// Same length is assumed
+	for i := 0; i < len(ps); i++ {
+		if ps[i] != os[i] {
+			return false
+		}
+	}
+	return true
+}
+
+// TODO Test NextPlayer for more than two players
 func TestGame_Move2(t *testing.T) {
 	tables := []struct {
 		pos        Position
@@ -67,7 +69,9 @@ func TestGame_Move2(t *testing.T) {
 	}{
 		{[2]int{0, 0}, 0, 1, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
 		{[2]int{1, 1}, 1, 0, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
-		{[2]int{4, 2}, 1, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.AnyError},
+		{[2]int{2, 2}, 1, 0, nil, test.AnyError}, // False NextPlayer
+		{[2]int{1, 1}, 0, 0, nil, test.AnyError}, // Field not empty
+		{[2]int{4, 1}, 0, 0, nil, test.AnyError}, // Outside board
 	}
 
 	game, err := NewGame(3, 2, 0)
@@ -77,20 +81,16 @@ func TestGame_Move2(t *testing.T) {
 	}
 
 	for i, table := range tables {
-		err := game.Move(table.pos, table.playerPre)
-		if (err == nil) != (table.err == test.NoError) {
-			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
-				i+1, table.err, err)
-			continue
-		}
-		if err != nil {
-			continue
-		}
-		if !game.Board.Marks.Equal(table.post) {
+		switch err := game.Move(table.pos, table.playerPre); false {
+		case test.Cond(table.err == test.AnyError, err != nil):
+			t.Errorf("expected error in step %v but none was returned", i+1)
+		case test.Cond(table.err == test.NoError, err == nil):
+			t.Errorf("no error expected in step %v but one was returned", i+1)
+		case table.err == test.NoError:
+		case game.Board.Marks.Equal(table.post):
 			t.Errorf("board different in step %v: expected = %v, actual = %v", i+1,
 				table.post, game.Board.Marks)
-		}
-		if game.NextPlayer != table.playerPost {
+		case game.NextPlayer == table.playerPost:
 			t.Errorf("next player wrong in step %v: expected = %v, actual = %v", i+1,
 				table.playerPost, game.NextPlayer)
 		}

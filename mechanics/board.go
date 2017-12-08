@@ -31,7 +31,7 @@ type Marks []Player
 type Position [2]int
 
 // Player is the ID of a player.
-type Player int
+type Player int // IDEA increment function with modulo
 
 func (b Board) String() string {
 

@@ -1,6 +1,9 @@
 package mechanics
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // MinPlayers is the minimal number of players, human or not, that are needed
 // for a game.
@@ -66,10 +69,13 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 func (g *Game) Move(pos Position, player Player) error {
 	// TODO What about false moves?
 	if player != g.NextPlayer {
-		return fmt.Errorf("Next move belongs to player %v", g.NextPlayer)
+		return fmt.Errorf("next move belongs to player %v", g.NextPlayer)
 	}
 
-	// FIXME not checked for errors
+	if ok, reason := g.Board.IsWritable(pos); !ok {
+		return errors.New(reason)
+	}
+
 	g.Board.Put(pos, player)
 	g.NextPlayer = Player(int(g.NextPlayer+1) % len(g.Players))
 

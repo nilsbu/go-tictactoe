@@ -4,9 +4,10 @@ import (
 	"testing"
 
 	"go-tictactoe/mechanics"
+	"go-tictactoe/test"
 )
 
-const noWinner = -1
+const noWinner mechanics.Player = -1
 
 func TestGetWinner(t *testing.T) {
 	tables := []struct {
@@ -30,23 +31,13 @@ func TestGetWinner(t *testing.T) {
 
 	for i, table := range tables {
 		b := mechanics.Board{Marks: table.marks, Size: table.size}
-		winner, hasWinner := GetWinner(b)
-
-		if table.winner == noWinner {
-			if hasWinner {
-				t.Errorf("no winner expected in step %v but one was returned", i+1)
-			}
-			continue
-		}
-
-		if !hasWinner {
-			if table.winner != noWinner {
-				t.Errorf("winner expected in step %v but none returned", i+1)
-			}
-			continue
-		}
-
-		if table.winner != winner {
+		switch winner, hasWinner := GetWinner(b); false {
+		case test.Cond(table.winner == noWinner, !hasWinner):
+			t.Errorf("no winner expected in step %v but one was returned", i+1)
+		case test.Cond(table.winner != noWinner, hasWinner):
+			t.Errorf("winner expected in step %v but none returned", i+1)
+		case table.winner != noWinner:
+		case table.winner == winner:
 			t.Errorf("wrong winner in table %v: expected = %v, actual = %v", i+1,
 				table.winner, winner)
 		}
