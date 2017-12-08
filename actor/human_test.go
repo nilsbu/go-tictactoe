@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"go-tictactoe/mechanics"
+	"go-tictactoe/test"
 )
 
 type moveCode int
@@ -40,25 +41,22 @@ func TestIsAcceptableMove(t *testing.T) {
 	}
 
 	for i, table := range tables {
-		switch pos, msg, err := isAcceptableMove(b, table.input); {
-		case table.status == quit && err == nil:
+		switch pos, msg, err := isAcceptableMove(b, table.input); false {
+		case test.Cond(table.status == quit, err != nil):
 			t.Errorf("error expected in step %v but not returned", i+1)
-		case table.status == quit && msg != "":
+		case test.Cond(table.status == quit, msg == ""):
 			t.Errorf("message has to be \"\" in step %v since quit is requested", i+1)
-		case table.status == quit:
-		case table.status != quit && err != nil:
+		case table.status != quit:
+		case err == nil:
 			t.Errorf("no error expected in step %v but was returned", i+1)
-		case err != nil:
-		case table.status == fail && msg == "":
+		case test.Cond(table.status == fail, msg != ""):
 			t.Errorf("expected failure in step %v but passed", i+1)
-		case table.status == fail:
-		case table.status != fail && msg != "":
+		case table.status == ok:
+		case msg == "":
 			t.Errorf("failed unexpectedly in step %v", i+1)
-		case msg != "":
-		case table.pos != pos:
+		case table.pos == pos:
 			t.Errorf("false position in step %v, expected = %v, actual = %v",
 				i+1, table.pos, pos)
-		default:
 		}
 	}
 }

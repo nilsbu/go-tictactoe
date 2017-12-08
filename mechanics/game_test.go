@@ -3,7 +3,7 @@ package mechanics
 import (
 	"testing"
 
-	"go-tictactoe/util"
+	"go-tictactoe/test"
 )
 
 func TestNewGame(t *testing.T) {
@@ -11,19 +11,19 @@ func TestNewGame(t *testing.T) {
 		boardSize    int
 		humanPlayers int
 		players      []PlayerType
-		err          util.ErrorAnticipation
+		err          test.ErrorAnticipation
 	}{
-		{3, 2, []PlayerType{Human, Human}, util.NoError},
-		{4, 1, []PlayerType{Human, Computer}, util.NoError},
-		{5, 0, []PlayerType{Computer, Computer, Computer}, util.NoError},
-		{3, 1, []PlayerType{Human}, util.AnyError},
-		{2, 1, []PlayerType{Human, Computer}, util.AnyError},
-		{3, 3, []PlayerType{Human, Human}, util.AnyError},
+		{3, 2, []PlayerType{Human, Human}, test.NoError},
+		{4, 1, []PlayerType{Human, Computer}, test.NoError},
+		{5, 0, []PlayerType{Computer, Computer, Computer}, test.NoError},
+		{3, 1, []PlayerType{Human}, test.AnyError},
+		{2, 1, []PlayerType{Human, Computer}, test.AnyError},
+		{3, 3, []PlayerType{Human, Human}, test.AnyError},
 	}
 
 	for _, table := range tables {
 		game, err := NewGame(table.boardSize, len(table.players), table.humanPlayers)
-		if (err == nil) != (table.err == util.NoError) {
+		if (err == nil) != (table.err == test.NoError) {
 			t.Errorf("unexpected error behavior: expected = \"%v\", actual = \"%v\"",
 				table.err, err)
 			continue
@@ -63,11 +63,11 @@ func TestGame_Move2(t *testing.T) {
 		playerPre  Player
 		playerPost Player
 		post       Marks
-		err        util.ErrorAnticipation
+		err        test.ErrorAnticipation
 	}{
-		{[2]int{0, 0}, 0, 1, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, util.NoError},
-		{[2]int{1, 1}, 1, 0, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.NoError},
-		{[2]int{4, 2}, 1, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, util.AnyError},
+		{[2]int{0, 0}, 0, 1, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
+		{[2]int{1, 1}, 1, 0, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
+		{[2]int{4, 2}, 1, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.AnyError},
 	}
 
 	game, err := NewGame(3, 2, 0)
@@ -78,7 +78,7 @@ func TestGame_Move2(t *testing.T) {
 
 	for i, table := range tables {
 		err := game.Move(table.pos, table.playerPre)
-		if (err == nil) != (table.err == util.NoError) {
+		if (err == nil) != (table.err == test.NoError) {
 			t.Errorf("unexpected error behavior in step %v: expected = \"%v\", actual = \"%v\"",
 				i+1, table.err, err)
 			continue

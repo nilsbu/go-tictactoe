@@ -1,4 +1,4 @@
-package util
+package test
 
 // ErrorAnticipation is a type that is used in test tables to describe if an
 // error is expected by a function when no other information about that error is
@@ -11,3 +11,9 @@ const (
 	AnyError ErrorAnticipation = iota
 	NoError
 )
+
+// Cond is the the material conditional.
+// 		Cond(a, b) == !a || b
+func Cond(a, b bool) bool {
+	return !a || b
+}
