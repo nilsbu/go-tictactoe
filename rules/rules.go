@@ -2,6 +2,17 @@ package rules
 
 import "go-tictactoe/mechanics"
 
+// IsFull checks if a board is full.
+func IsFull(b mechanics.Board) bool {
+	for _, v := range b.Marks {
+		if v == mechanics.Player(0) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // GetWinner determines if there a player has won the game.
 // NoWinner is returned if this is not the case, otherwise the player's ID is
 // returned.

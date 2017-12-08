@@ -7,26 +7,48 @@ import (
 	"go-tictactoe/test"
 )
 
-const noWinner mechanics.Player = -1
+func TestIsFinished(t *testing.T) {
+	tables := []struct {
+		marks mechanics.Marks
+		size  int
+		fin   bool
+	}{
+		{mechanics.Marks{0, 0, 0, 0}, 2, false},
+		{mechanics.Marks{2, 1, 2, 0}, 2, false},
+		{mechanics.Marks{2, 1, 2, 3}, 2, true},
+		{mechanics.Marks{2, 1, 2, 3, 1, 1, 2, 3, 2}, 3, true},
+		{mechanics.Marks{0, 1, 2, 3, 1, 1, 2, 3, 2}, 3, false},
+	}
+
+	for i, table := range tables {
+		b := mechanics.Board{Marks: table.marks, Size: table.size}
+		switch fin := IsFull(b); false {
+		case table.fin == fin:
+			t.Errorf("in step %v, expected = %v, actual %v", i+1, table.fin, fin)
+		}
+	}
+}
 
 func TestGetWinner(t *testing.T) {
+	const noWinner mechanics.Player = -1
+
 	tables := []struct {
-		marks  []mechanics.Player
+		marks  mechanics.Marks
 		size   int
 		winner mechanics.Player
 	}{
 		// No winner
-		{[]mechanics.Player{0, 0, 0, 0, 0, 0, 0, 0, 0}, 3, noWinner},
-		{[]mechanics.Player{2, 1, 2, 1, 1, 2, 1, 2, 1}, 3, noWinner},
+		{mechanics.Marks{0, 0, 0, 0, 0, 0, 0, 0, 0}, 3, noWinner},
+		{mechanics.Marks{2, 1, 2, 1, 1, 2, 1, 2, 1}, 3, noWinner},
 		// Winner in row
-		{[]mechanics.Player{1, 1, 1, 2, 2, 1, 1, 2, 2}, 3, 1},
-		{[]mechanics.Player{1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 2, 1, 1, 2}, 4, 2},
+		{mechanics.Marks{1, 1, 1, 2, 2, 1, 1, 2, 2}, 3, 1},
+		{mechanics.Marks{1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 2, 1, 1, 2}, 4, 2},
 		// Winner in column
-		{[]mechanics.Player{1, 2, 3, 2, 1, 3, 1, 2, 3}, 3, 3},
-		{[]mechanics.Player{1, 2, 2, 1, 1, 2, 2, 1, 1}, 3, 1},
+		{mechanics.Marks{1, 2, 3, 2, 1, 3, 1, 2, 3}, 3, 3},
+		{mechanics.Marks{1, 2, 2, 1, 1, 2, 2, 1, 1}, 3, 1},
 		//Winner in diagonal
-		{[]mechanics.Player{1, 2, 2, 1, 1, 2, 2, 2, 1}, 3, 1},
-		{[]mechanics.Player{0, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0}, 4, 2},
+		{mechanics.Marks{1, 2, 2, 1, 1, 2, 2, 2, 1}, 3, 1},
+		{mechanics.Marks{0, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0}, 4, 2},
 	}
 
 	for i, table := range tables {
