@@ -3,19 +3,19 @@ package main
 import (
 	"fmt"
 
-	"go-tictactoe/actor"
-	"go-tictactoe/mechanics"
+	a "go-tictactoe/actor"
+	m "go-tictactoe/mechanics"
 )
 
 func main() {
-	game, err := mechanics.NewGame(3, 2, 1)
+	game, err := m.NewGame(3, 2, 1)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	players := []actor.Actor{
-		&actor.Human{ID: 1},
-		&actor.Computer{ID: 2, Players: 2},
+	players := []a.Actor{
+		&a.Human{ID: 1},
+		&a.Computer{ID: 2, Players: 2},
 	}
 
 	for {

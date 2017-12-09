@@ -8,16 +8,16 @@ import (
 	"strconv"
 	"strings"
 
-	"go-tictactoe/mechanics"
+	m "go-tictactoe/mechanics"
 )
 
 // Human represents a human player.
 type Human struct {
-	ID mechanics.Player
+	ID m.Player
 }
 
 // GetMove returns the move the player makes after prompting them for input.
-func (h *Human) GetMove(b mechanics.Board) (mechanics.Position, error) {
+func (h *Human) GetMove(b m.Board) (m.Position, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Printf("Your move, player %v:\n", h.ID)
@@ -31,36 +31,35 @@ func (h *Human) GetMove(b mechanics.Board) (mechanics.Position, error) {
 		fmt.Println(msg)
 	}
 	if err := scanner.Err(); err != nil {
-		return mechanics.Position{0, 0}, err
+		return m.Position{0, 0}, err
 	}
-	return mechanics.Position{0, 0},
-		errors.New("gathering input failed unexpectedly")
+	return m.Position{0, 0}, errors.New("gathering input failed unexpectedly")
 }
 
-func isAcceptableMove(b mechanics.Board, s string) (pos mechanics.Position,
+func isAcceptableMove(b m.Board, s string) (pos m.Position,
 	msg string, err error) {
 
 	s = strings.Trim(s, " ")
 	if s == "quit" || s == "exit" {
-		return mechanics.Position{0, 0}, "", errors.New("quit")
+		return m.Position{0, 0}, "", errors.New("quit")
 	}
 
 	split := strings.Split(s, ",")
 
 	if len(split) != 2 {
-		return mechanics.Position{0, 0}, "input must have contain two ints", nil
+		return m.Position{0, 0}, "input must have contain two ints", nil
 	}
 
 	var err2 error
 	for i := 0; i < 2; i++ {
 		pos[i], err2 = strconv.Atoi(strings.Trim(split[i], " \n"))
 		if err2 != nil {
-			return mechanics.Position{0, 0}, "both parameters must be numbers", nil
+			return m.Position{0, 0}, "both parameters must be numbers", nil
 		}
 	}
 
 	if ok, reason := b.IsWritable(pos); ok == false {
-		return mechanics.Position{0, 0}, reason, nil
+		return m.Position{0, 0}, reason, nil
 	}
 
 	return pos, "", nil

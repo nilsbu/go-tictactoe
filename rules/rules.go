@@ -1,11 +1,11 @@
 package rules
 
-import "go-tictactoe/mechanics"
+import m "go-tictactoe/mechanics"
 
 // IsFull checks if a board is full.
-func IsFull(b mechanics.Board) bool {
+func IsFull(b m.Board) bool {
 	for _, v := range b.Marks {
-		if v == mechanics.Player(0) {
+		if v == m.Player(0) {
 			return false
 		}
 	}
@@ -16,7 +16,7 @@ func IsFull(b mechanics.Board) bool {
 // GetWinner determines if there a player has won the game.
 // NoWinner is returned if this is not the case, otherwise the player's ID is
 // returned.
-func GetWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
+func GetWinner(b m.Board) (id m.Player, hasWinner bool) {
 	id, hasWinner = getRowWinner(b)
 	if hasWinner {
 		return
@@ -30,7 +30,7 @@ func GetWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
 	return getDiagonalWinner(b)
 }
 
-func getRowWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
+func getRowWinner(b m.Board) (id m.Player, hasWinner bool) {
 	for y := 0; y < b.Size; y++ {
 		if b.Marks[y*b.Size] == 0 {
 			continue
@@ -50,7 +50,7 @@ func getRowWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
 	return 0, false
 }
 
-func getColumnWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
+func getColumnWinner(b m.Board) (id m.Player, hasWinner bool) {
 	for x := 0; x < b.Size; x++ {
 		if b.Marks[x] == 0 {
 			continue
@@ -70,7 +70,7 @@ func getColumnWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
 	return 0, false
 }
 
-func getDiagonalWinner(b mechanics.Board) (id mechanics.Player, hasWinner bool) {
+func getDiagonalWinner(b m.Board) (id m.Player, hasWinner bool) {
 	if b.Marks[0] != 0 {
 		for xy := 1; xy < b.Size; xy++ {
 			if b.Marks[xy*b.Size+xy] != b.Marks[0] {

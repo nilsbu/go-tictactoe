@@ -19,9 +19,8 @@ func (c *Computer) GetMove(b m.Board) (m.Position, error) {
 }
 
 // computeOptimalMoveSeq finds the optimal move for the player.
-func computeOptimalMoveSeq(b m.Board, current m.Player,
-	numPlayers m.Player) (pos int, winner m.Player,
-	hasWinner bool) {
+func computeOptimalMoveSeq(b m.Board, current m.Player, numPlayers m.Player) (
+	pos int, winner m.Player, hasWinner bool) {
 
 	winner = 0
 	hasWinner = true
@@ -48,8 +47,8 @@ func computeOptimalMoveSeq(b m.Board, current m.Player,
 	return
 }
 
-func attempt(b m.Board, p int, current m.Player,
-	numPlayers m.Player) (winner m.Player, hasWinner bool) {
+func attempt(b m.Board, p int, current m.Player, numPlayers m.Player) (
+	winner m.Player, hasWinner bool) {
 
 	defer func() { b.Marks[p] = 0 }()
 	b.Marks[p] = current
