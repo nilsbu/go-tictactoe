@@ -1,4 +1,4 @@
-package mechanics
+package board
 
 import (
 	"fmt"
@@ -58,16 +58,4 @@ func TestBoard_Put(t *testing.T) {
 			currentPlayer = currentPlayer%2 + 1
 		}
 	}
-}
-
-func (marks Marks) Equal(other Marks) bool {
-	if len(marks) != len(other) {
-		return false
-	}
-	for i := 0; i < len(marks); i++ {
-		if marks[i] != other[i] {
-			return false
-		}
-	}
-	return true
 }

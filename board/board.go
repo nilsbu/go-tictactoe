@@ -1,4 +1,4 @@
-package mechanics
+package board
 
 import (
 	"errors"
@@ -44,19 +44,19 @@ func (p Position) ToIndex(s int) int {
 	return p[1]*s + p[0]
 }
 
-func (b Board) String() string {
+func (bo Board) String() string {
 	// TODO move this to another place
-	s := strings.Repeat("-", 2*b.Size+1) + "\n"
+	s := strings.Repeat("-", 2*bo.Size+1) + "\n"
 
-	for y := 0; y < b.Size; y++ {
+	for y := 0; y < bo.Size; y++ {
 		s += "|"
 
-		for x := 0; x < b.Size; x++ {
-			s += fmt.Sprintf("%v|", symbols[b.Marks[y*b.Size+x]])
+		for x := 0; x < bo.Size; x++ {
+			s += fmt.Sprintf("%v|", symbols[bo.Marks[y*bo.Size+x]])
 		}
 
 		s += "\n"
-		s += strings.Repeat("-", 2*b.Size+1) + "\n"
+		s += strings.Repeat("-", 2*bo.Size+1) + "\n"
 	}
 
 	return s
@@ -65,27 +65,39 @@ func (b Board) String() string {
 // Put makes a mark for a player on the board.
 // If the position is not on the board or a mark has already been made at the
 // specified position, Put returns an error.
-func (b Board) Put(p Position, player Player) error {
-	if ok, reason := b.IsWritable(p); ok == false {
+func (bo Board) Put(p Position, player Player) error {
+	if ok, reason := bo.IsWritable(p); ok == false {
 		return errors.New(reason)
 	}
 
-	b.Marks[p.ToIndex(b.Size)] = player
+	bo.Marks[p.ToIndex(bo.Size)] = player
 	return nil
 }
 
 // IsWritable checks is a position can be written in.
 // It has to be within the limits of the board and empty.
 // If the position is not writable a reason is given.
-func (b Board) IsWritable(p Position) (ok bool, reason string) {
-	if p[0] < 0 || p[0] >= b.Size || p[1] < 0 || p[1] >= b.Size {
+func (bo Board) IsWritable(p Position) (ok bool, reason string) {
+	if p[0] < 0 || p[0] >= bo.Size || p[1] < 0 || p[1] >= bo.Size {
 		return false, fmt.Sprintf("position out of range, board has size %vx%v",
-			b.Size, b.Size)
+			bo.Size, bo.Size)
 	}
 
-	if b.Marks[p.ToIndex(b.Size)] != 0 {
+	if bo.Marks[p.ToIndex(bo.Size)] != 0 {
 		return false, fmt.Sprintf("position is not empty")
 	}
 
 	return true, ""
+}
+
+func (marks Marks) Equal(other Marks) bool {
+	if len(marks) != len(other) {
+		return false
+	}
+	for i := 0; i < len(marks); i++ {
+		if marks[i] != other[i] {
+			return false
+		}
+	}
+	return true
 }

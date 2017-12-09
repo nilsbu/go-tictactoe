@@ -1,6 +1,6 @@
 package actor
 
-import m "go-tictactoe/mechanics"
+import b "go-tictactoe/board"
 
 // Actor is an interface that represents a player in a game.
 // It can be a human or computer.
@@ -8,5 +8,5 @@ import m "go-tictactoe/mechanics"
 // GetMove provides the next move the player makes.
 // When it returns an error, the game is supposed to be aborted.
 type Actor interface {
-	GetMove(b m.Board) (m.Position, error)
+	GetMove(bo b.Board) (b.Position, error)
 }

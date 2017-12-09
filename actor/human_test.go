@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	m "go-tictactoe/mechanics"
+	m "go-tictactoe/board"
 	"go-tictactoe/test"
 )
 

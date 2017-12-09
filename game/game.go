@@ -1,8 +1,10 @@
-package mechanics
+package game
 
 import (
 	"errors"
 	"fmt"
+
+	b "go-tictactoe/board"
 )
 
 // MinPlayers is the minimal number of players, human or not, that are needed
@@ -16,7 +18,7 @@ const MinBoardSize = 3
 // Game holds the information about the current state of the game.
 type Game struct {
 	Players []PlayerType
-	Board   Board
+	Board   b.Board
 
 	CurrentPlayer PlayerCounter
 }
@@ -34,9 +36,9 @@ const (
 // PlayerCounter is a counter that provides the ID of the next plauer.
 type PlayerCounter struct {
 	// Next is the ID of the next player.
-	Next Player
+	Next b.Player
 	// Total is the number of players.
-	Total Player
+	Total b.Player
 }
 
 // Inc moves the counter on to the next player.
@@ -73,14 +75,14 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 
 	return &Game{
 		playerArr,
-		Board{make(Marks, boardSize*boardSize), boardSize},
-		PlayerCounter{Next: 1, Total: Player(players)},
+		b.Board{Marks: make(b.Marks, boardSize*boardSize), Size: boardSize},
+		PlayerCounter{Next: 1, Total: b.Player(players)},
 	}, nil
 }
 
 // Move adds a players move to the board.
 // It is checked if the next move belongs to the player.
-func (g *Game) Move(pos Position, player Player) error {
+func (g *Game) Move(pos b.Position, player b.Player) error {
 	// TODO What about false moves?
 	if player != g.CurrentPlayer.Next {
 		return fmt.Errorf("next move belongs to player %v", g.CurrentPlayer.Next)

@@ -1,19 +1,20 @@
-package mechanics
+package game
 
 import (
 	"fmt"
 	"testing"
 
+	b "go-tictactoe/board"
 	"go-tictactoe/test"
 )
 
 func TestPlayerCounter_Inc(t *testing.T) {
 	for n := 2; n <= 4; n++ {
-		pc := PlayerCounter{Next: 1, Total: Player(n)}
+		pc := PlayerCounter{Next: 1, Total: b.Player(n)}
 
 		t.Run(fmt.Sprintf("n=%v", n), func(t *testing.T) {
 			for i := 0; i <= 2*n; i++ {
-				if pc.Next != Player(i%n+1) {
+				if pc.Next != b.Player(i%n+1) {
 					t.Errorf("after %v increases, counter should be %v but was %v",
 						i, i%n+1, pc.Next)
 					break
@@ -82,20 +83,20 @@ func equals(ps []PlayerType, os []PlayerType) bool {
 // TODO Test NextPlayer for more than two players
 func TestGame_Move2(t *testing.T) {
 	testCases := []struct {
-		pos      Position
-		plyrPre  Player
-		plyrPost Player
-		post     Marks
+		pos      b.Position
+		plyrPre  b.Player
+		plyrPost b.Player
+		post     b.Marks
 		err      test.ErrorAnticipation
 	}{
-		{[2]int{0, 0}, 1, 2, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
-		{[2]int{1, 1}, 2, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
+		{[2]int{0, 0}, 1, 2, []b.Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
+		{[2]int{1, 1}, 2, 1, []b.Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
 		{[2]int{2, 2}, 2, 1, nil, test.AnyError}, // False NextPlayer
 		{[2]int{1, 1}, 1, 1, nil, test.AnyError}, // Field not empty
 		{[2]int{4, 1}, 1, 1, nil, test.AnyError}, // Outside board
 	}
 
-	game, err := NewGame(3, 2, 0)
+	g, err := NewGame(3, 2, 0)
 	if err != nil {
 		t.Errorf("game creation failed: %v", err)
 		return
@@ -104,18 +105,18 @@ func TestGame_Move2(t *testing.T) {
 	for i, tc := range testCases {
 		s := fmt.Sprintf("#%v: %v at %v", i, tc.plyrPre, tc.pos)
 		t.Run(s, func(t *testing.T) {
-			switch err := game.Move(tc.pos, tc.plyrPre); false {
+			switch err := g.Move(tc.pos, tc.plyrPre); false {
 			case test.Cond(tc.err == test.AnyError, err != nil):
 				t.Errorf("expected error but none was returned")
 			case test.Cond(tc.err == test.NoError, err == nil):
 				t.Errorf("no error expected but one was returned")
 			case tc.err == test.NoError:
-			case game.Board.Marks.Equal(tc.post):
+			case g.Board.Marks.Equal(tc.post):
 				t.Errorf("board different: expected = %v, actual = %v",
-					tc.post, game.Board.Marks)
-			case game.CurrentPlayer.Next == tc.plyrPost:
+					tc.post, g.Board.Marks)
+			case g.CurrentPlayer.Next == tc.plyrPost:
 				t.Errorf("next player wrong: expected = %v, actual = %v",
-					tc.plyrPost, game.CurrentPlayer)
+					tc.plyrPost, g.CurrentPlayer)
 			}
 		})
 	}

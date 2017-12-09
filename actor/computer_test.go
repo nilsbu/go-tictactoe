@@ -5,31 +5,31 @@ import (
 	"math"
 	"testing"
 
-	m "go-tictactoe/mechanics"
+	b "go-tictactoe/board"
 	"go-tictactoe/test"
 )
 
-const noWinner m.Player = -1
+const noWinner b.Player = -1
 
 var testCases = []struct {
-	players m.Player
-	id      m.Player
-	marks   m.Marks
+	players b.Player
+	id      b.Player
+	marks   b.Marks
 	idxs    []int
-	winner  m.Player
+	winner  b.Player
 }{
-	{2, 2, m.Marks{2, 0, 2, 0, 1, 0, 1, 1, 0}, []int{1}, 2},
-	{2, 1, m.Marks{0, 0, 0, 2, 1, 0, 0, 0, 0}, []int{0, 1, 2, 6, 7, 8}, 1},
-	{2, 1, m.Marks{0, 0, 0, 1, 2, 0, 0, 0, 0}, []int{0, 2, 6, 8}, noWinner},
-	{2, 2, m.Marks{0, 0, 0, 1, 2, 0, 1, 0, 0}, []int{0}, noWinner},
-	{2, 1, m.Marks{2, 0, 0, 1, 2, 0, 1, 0, 0}, []int{8}, noWinner},
-	{2, 2, m.Marks{2, 0, 0, 1, 2, 0, 1, 0, 1}, []int{7}, noWinner},
-	{2, 1, m.Marks{2, 0, 0, 1, 2, 0, 1, 2, 1}, []int{1}, noWinner},
-	{2, 2, m.Marks{0, 0, 1, 1, 2, 0, 0, 0, 0}, []int{0, 1, 6, 7}, noWinner},
-	{2, 1, m.Marks{0, 0, 1, 1, 2, 0, 0, 2, 0}, []int{1}, noWinner},
-	{2, 2, m.Marks{1, 0, 1, 1, 2, 0, 0, 2, 0}, []int{1}, 2},
-	{2, 2, m.Marks{1, 0, 0, 2, 1, 0, 0, 0, 0}, []int{1, 2, 5, 6, 7, 8}, 1},
-	{2, 2, m.Marks{2, 0, 0, 0, 1, 0, 1, 0, 0}, []int{2}, noWinner},
+	{2, 2, b.Marks{2, 0, 2, 0, 1, 0, 1, 1, 0}, []int{1}, 2},
+	{2, 1, b.Marks{0, 0, 0, 2, 1, 0, 0, 0, 0}, []int{0, 1, 2, 6, 7, 8}, 1},
+	{2, 1, b.Marks{0, 0, 0, 1, 2, 0, 0, 0, 0}, []int{0, 2, 6, 8}, noWinner},
+	{2, 2, b.Marks{0, 0, 0, 1, 2, 0, 1, 0, 0}, []int{0}, noWinner},
+	{2, 1, b.Marks{2, 0, 0, 1, 2, 0, 1, 0, 0}, []int{8}, noWinner},
+	{2, 2, b.Marks{2, 0, 0, 1, 2, 0, 1, 0, 1}, []int{7}, noWinner},
+	{2, 1, b.Marks{2, 0, 0, 1, 2, 0, 1, 2, 1}, []int{1}, noWinner},
+	{2, 2, b.Marks{0, 0, 1, 1, 2, 0, 0, 0, 0}, []int{0, 1, 6, 7}, noWinner},
+	{2, 1, b.Marks{0, 0, 1, 1, 2, 0, 0, 2, 0}, []int{1}, noWinner},
+	{2, 2, b.Marks{1, 0, 1, 1, 2, 0, 0, 2, 0}, []int{1}, 2},
+	{2, 2, b.Marks{1, 0, 0, 2, 1, 0, 0, 0, 0}, []int{1, 2, 5, 6, 7, 8}, 1},
+	{2, 2, b.Marks{2, 0, 0, 0, 1, 0, 1, 0, 0}, []int{2}, noWinner},
 }
 
 func TestComputerGetMove(t *testing.T) {
@@ -37,8 +37,8 @@ func TestComputerGetMove(t *testing.T) {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
 			c := Computer{ID: tc.id, Players: tc.players}
 			s := int(math.Sqrt(float64(len(tc.marks))))
-			b := m.Board{Marks: tc.marks, Size: s}
-			switch pos, err := c.GetMove(b); false {
+			bo := b.Board{Marks: tc.marks, Size: s}
+			switch pos, err := c.GetMove(bo); false {
 			case err == nil:
 				t.Errorf("must never return an error")
 			case isIndexInList(pos.ToIndex(s), tc.idxs):
@@ -53,10 +53,10 @@ func TestComputeOptimalMovePar(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
 			s := int(math.Sqrt(float64(len(tc.marks))))
-			marks := make(m.Marks, len(tc.marks))
+			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
-			b := m.Board{Marks: marks, Size: s}
-			switch p := computeOptimalMovePar(b, tc.id, tc.players); false {
+			bo := b.Board{Marks: marks, Size: s}
+			switch p := computeOptimalMovePar(bo, tc.id, tc.players); false {
 			case isIndexInList(p, tc.idxs):
 				t.Errorf("%v must be in %v", p, tc.idxs)
 			}
@@ -68,12 +68,12 @@ func TestComputeOptimalMoveSeq(t *testing.T) {
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
 			s := int(math.Sqrt(float64(len(tc.marks))))
-			marks := make(m.Marks, len(tc.marks))
+			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
-			b := m.Board{Marks: marks, Size: s}
-			p, w, hw := computeOptimalMoveSeq(b, tc.id, tc.players)
+			bo := b.Board{Marks: marks, Size: s}
+			p, w, hw := computeOptimalMoveSeq(bo, tc.id, tc.players)
 			switch false {
-			case isBoardUnchanged(tc.marks, b.Marks):
+			case isBoardUnchanged(tc.marks, bo.Marks):
 				t.Errorf("board changed")
 			case test.Cond(!hw, w == 0):
 				t.Errorf("hasWinner = false but winner = %v, must be 0", w)
@@ -90,9 +90,9 @@ func TestComputeOptimalMoveSeq(t *testing.T) {
 	}
 }
 
-func isBoardUnchanged(a, b m.Marks) bool {
+func isBoardUnchanged(a, bo b.Marks) bool {
 	for i := range a {
-		if a[i] != b[i] {
+		if a[i] != bo[i] {
 			return false
 		}
 	}
@@ -108,48 +108,48 @@ func isIndexInList(pidx int, idxs []int) bool {
 	return false
 }
 
-var benchMarks = []m.Marks{
-	m.Marks{2, 1, 2, 1, 1, 2, 1, 2, 0},
-	m.Marks{2, 1, 2, 1, 1, 0, 1, 2, 0},
-	m.Marks{2, 1, 2, 0, 1, 0, 1, 2, 0},
-	m.Marks{2, 1, 2, 0, 1, 0, 1, 0, 0},
-	m.Marks{2, 0, 2, 0, 1, 0, 1, 0, 0},
-	m.Marks{2, 0, 0, 0, 1, 0, 1, 0, 0},
-	m.Marks{2, 0, 0, 0, 1, 0, 0, 0, 0},
-	m.Marks{0, 0, 0, 0, 1, 0, 0, 0, 0},
-	m.Marks{0, 0, 0, 0, 0, 0, 0, 0, 0},
+var benchMarks = []b.Marks{
+	b.Marks{2, 1, 2, 1, 1, 2, 1, 2, 0},
+	b.Marks{2, 1, 2, 1, 1, 0, 1, 2, 0},
+	b.Marks{2, 1, 2, 0, 1, 0, 1, 2, 0},
+	b.Marks{2, 1, 2, 0, 1, 0, 1, 0, 0},
+	b.Marks{2, 0, 2, 0, 1, 0, 1, 0, 0},
+	b.Marks{2, 0, 0, 0, 1, 0, 1, 0, 0},
+	b.Marks{2, 0, 0, 0, 1, 0, 0, 0, 0},
+	b.Marks{0, 0, 0, 0, 1, 0, 0, 0, 0},
+	b.Marks{0, 0, 0, 0, 0, 0, 0, 0, 0},
 }
 
-func bench(b *testing.B, i int, parallel bool) {
-	c := Computer{ID: m.Player((i+1)%2 + 1), Players: 2}
-	bo := m.Board{Marks: benchMarks[i-1], Size: 3}
+func bench(bm *testing.B, i int, parallel bool) {
+	c := Computer{ID: b.Player((i+1)%2 + 1), Players: 2}
+	bo := b.Board{Marks: benchMarks[i-1], Size: 3}
 
 	if parallel {
-		for n := 0; n < b.N; n++ {
+		for n := 0; n < bm.N; n++ {
 			c.GetMove(bo)
 		}
 	} else {
-		for n := 0; n < b.N; n++ {
+		for n := 0; n < bm.N; n++ {
 			c.getMoveSequential(bo)
 		}
 	}
 }
 
-func BenchmarkComputerGetMove1S(b *testing.B) { bench(b, 1, false) }
-func BenchmarkComputerGetMove2S(b *testing.B) { bench(b, 2, false) }
-func BenchmarkComputerGetMove3S(b *testing.B) { bench(b, 3, false) }
-func BenchmarkComputerGetMove4S(b *testing.B) { bench(b, 4, false) }
-func BenchmarkComputerGetMove5S(b *testing.B) { bench(b, 5, false) }
-func BenchmarkComputerGetMove6S(b *testing.B) { bench(b, 6, false) }
-func BenchmarkComputerGetMove7S(b *testing.B) { bench(b, 7, false) }
-func BenchmarkComputerGetMove8S(b *testing.B) { bench(b, 8, false) }
-func BenchmarkComputerGetMove9S(b *testing.B) { bench(b, 9, false) }
-func BenchmarkComputerGetMove1P(b *testing.B) { bench(b, 1, true) }
-func BenchmarkComputerGetMove2P(b *testing.B) { bench(b, 2, true) }
-func BenchmarkComputerGetMove3P(b *testing.B) { bench(b, 3, true) }
-func BenchmarkComputerGetMove4P(b *testing.B) { bench(b, 4, true) }
-func BenchmarkComputerGetMove5P(b *testing.B) { bench(b, 5, true) }
-func BenchmarkComputerGetMove6P(b *testing.B) { bench(b, 6, true) }
-func BenchmarkComputerGetMove7P(b *testing.B) { bench(b, 7, true) }
-func BenchmarkComputerGetMove8P(b *testing.B) { bench(b, 8, true) }
-func BenchmarkComputerGetMove9P(b *testing.B) { bench(b, 9, true) }
+func BenchmarkComputerGetMove1S(bm *testing.B) { bench(bm, 1, false) }
+func BenchmarkComputerGetMove2S(bm *testing.B) { bench(bm, 2, false) }
+func BenchmarkComputerGetMove3S(bm *testing.B) { bench(bm, 3, false) }
+func BenchmarkComputerGetMove4S(bm *testing.B) { bench(bm, 4, false) }
+func BenchmarkComputerGetMove5S(bm *testing.B) { bench(bm, 5, false) }
+func BenchmarkComputerGetMove6S(bm *testing.B) { bench(bm, 6, false) }
+func BenchmarkComputerGetMove7S(bm *testing.B) { bench(bm, 7, false) }
+func BenchmarkComputerGetMove8S(bm *testing.B) { bench(bm, 8, false) }
+func BenchmarkComputerGetMove9S(bm *testing.B) { bench(bm, 9, false) }
+func BenchmarkComputerGetMove1P(bm *testing.B) { bench(bm, 1, true) }
+func BenchmarkComputerGetMove2P(bm *testing.B) { bench(bm, 2, true) }
+func BenchmarkComputerGetMove3P(bm *testing.B) { bench(bm, 3, true) }
+func BenchmarkComputerGetMove4P(bm *testing.B) { bench(bm, 4, true) }
+func BenchmarkComputerGetMove5P(bm *testing.B) { bench(bm, 5, true) }
+func BenchmarkComputerGetMove6P(bm *testing.B) { bench(bm, 6, true) }
+func BenchmarkComputerGetMove7P(bm *testing.B) { bench(bm, 7, true) }
+func BenchmarkComputerGetMove8P(bm *testing.B) { bench(bm, 8, true) }
+func BenchmarkComputerGetMove9P(bm *testing.B) { bench(bm, 9, true) }

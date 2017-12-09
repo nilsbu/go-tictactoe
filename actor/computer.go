@@ -1,40 +1,40 @@
 package actor
 
 import (
-	m "go-tictactoe/mechanics"
+	b "go-tictactoe/board"
 	r "go-tictactoe/rules"
 )
 
 // Computer represents a computer player.
 // It implements a function to make a move.
 type Computer struct {
-	ID      m.Player
-	Players m.Player
+	ID      b.Player
+	Players b.Player
 }
 
-func (c *Computer) getMoveSequential(b m.Board) (m.Position, error) {
-	p, _, _ := computeOptimalMoveSeq(b, c.ID, c.Players)
-	return m.NewPosition(p, b.Size), nil
+func (c *Computer) getMoveSequential(bo b.Board) (b.Position, error) {
+	p, _, _ := computeOptimalMoveSeq(bo, c.ID, c.Players)
+	return b.NewPosition(p, bo.Size), nil
 }
 
 // GetMove makes the next move for the computer player calling it.
-func (c *Computer) GetMove(b m.Board) (m.Position, error) {
-	p := computeOptimalMovePar(b, c.ID, c.Players)
-	return m.NewPosition(p, b.Size), nil
+func (c *Computer) GetMove(bo b.Board) (b.Position, error) {
+	p := computeOptimalMovePar(bo, c.ID, c.Players)
+	return b.NewPosition(p, bo.Size), nil
 }
 
 // computeOptimalMoveSeq finds the optimal move for the player.
-func computeOptimalMoveSeq(b m.Board, current m.Player, numPlayers m.Player) (
-	pos int, winner m.Player, hasWinner bool) {
+func computeOptimalMoveSeq(bo b.Board, current b.Player, numPlayers b.Player) (
+	pos int, winner b.Player, hasWinner bool) {
 
 	winner = 0
 	hasWinner = true
-	for p := 0; p < len(b.Marks); p++ {
-		if b.Marks[p] > 0 {
+	for p := 0; p < len(bo.Marks); p++ {
+		if bo.Marks[p] > 0 {
 			continue
 		}
 
-		tmpWinner, tmpHas := attempt(b, p, current, numPlayers)
+		tmpWinner, tmpHas := attempt(bo, p, current, numPlayers)
 
 		switch {
 		case tmpWinner == current:
@@ -52,22 +52,22 @@ func computeOptimalMoveSeq(b m.Board, current m.Player, numPlayers m.Player) (
 	return
 }
 
-func attempt(b m.Board, p int, current m.Player, numPlayers m.Player) (
-	winner m.Player, hasWinner bool) {
+func attempt(bo b.Board, p int, current b.Player, numPlayers b.Player) (
+	winner b.Player, hasWinner bool) {
 
-	defer func() { b.Marks[p] = 0 }()
-	b.Marks[p] = current
+	defer func() { bo.Marks[p] = 0 }()
+	bo.Marks[p] = current
 
-	if winner, hasWinner = r.GetWinner(b); hasWinner {
+	if winner, hasWinner = r.GetWinner(bo); hasWinner {
 		return winner, hasWinner
 	}
 
-	if r.IsFull(b) {
-		return m.Player(0), false
+	if r.IsFull(bo) {
+		return b.Player(0), false
 	}
 
-	nextPlayer := m.Player((current % numPlayers) + 1)
-	_, winner, hasWinner = computeOptimalMoveSeq(b, nextPlayer, numPlayers)
+	nextPlayer := b.Player((current % numPlayers) + 1)
+	_, winner, hasWinner = computeOptimalMoveSeq(bo, nextPlayer, numPlayers)
 
 	return
 }
@@ -80,7 +80,7 @@ const (
 	win
 )
 
-func computeOptimalMovePar(b m.Board, current m.Player, numPlayers m.Player) (
+func computeOptimalMovePar(bo b.Board, current b.Player, numPlayers b.Player) (
 	pos int) {
 
 	type answer struct {
@@ -88,18 +88,18 @@ func computeOptimalMovePar(b m.Board, current m.Player, numPlayers m.Player) (
 		p int
 	}
 
-	wait := make(chan answer, len(b.Marks))
+	wait := make(chan answer, len(bo.Marks))
 
-	for p := 0; p < len(b.Marks); p++ {
-		if b.Marks[p] > 0 {
+	for p := 0; p < len(bo.Marks); p++ {
+		if bo.Marks[p] > 0 {
 			wait <- answer{v: blocked, p: p}
 			continue
 		}
 
-		go func(i int, cur m.Player, numP m.Player) {
-			mcop := make(m.Marks, len(b.Marks))
-			copy(mcop, b.Marks)
-			bcop := m.Board{Marks: mcop, Size: b.Size}
+		go func(i int, cur b.Player, numP b.Player) {
+			mcop := make(b.Marks, len(bo.Marks))
+			copy(mcop, bo.Marks)
+			bcop := b.Board{Marks: mcop, Size: bo.Size}
 			tmpWinner, tmpHas := attempt(bcop, i, cur, numP)
 
 			switch {
@@ -114,7 +114,7 @@ func computeOptimalMovePar(b m.Board, current m.Player, numPlayers m.Player) (
 	}
 
 	var res = blocked
-	for p := 0; p < len(b.Marks); p++ {
+	for p := 0; p < len(bo.Marks); p++ {
 		a := <-wait
 
 		if res < a.v {
