@@ -20,7 +20,7 @@ type Human struct {
 func (h *Human) GetMove(b mechanics.Board) (mechanics.Position, error) {
 	scanner := bufio.NewScanner(os.Stdin)
 
-	fmt.Printf("Your move, player %v:\n", h.ID+1)
+	fmt.Printf("Your move, player %v:\n", h.ID)
 
 	for scanner.Scan() {
 		pos, msg, err := isAcceptableMove(b, scanner.Text())

@@ -25,13 +25,24 @@ type Board struct {
 // board.
 type Marks []Player
 
+// Player is the ID of a player or the number of players.
+type Player int
+
 // Position is a position on the board.
 // The two values are the x- and y-coordinate.
 // The top-left corner is (0, 0).
 type Position [2]int
 
-// Player is the ID of a player or the number of players.
-type Player int
+// NewPosition creates a Position from an index in a Marks array and the size
+// (edge length) of the board.
+func NewPosition(index int, size int) Position {
+	return Position{index % size, index / size}
+}
+
+// ToIndex returns the array index of a Position.
+func (p Position) ToIndex(s int) int {
+	return p[1]*s + p[0]
+}
 
 func (b Board) String() string {
 	// TODO move this to another place
@@ -59,7 +70,7 @@ func (b Board) Put(p Position, player Player) error {
 		return errors.New(reason)
 	}
 
-	b.Marks[p[1]*b.Size+p[0]] = Player(player + 1)
+	b.Marks[p.ToIndex(b.Size)] = player
 	return nil
 }
 
@@ -72,8 +83,7 @@ func (b Board) IsWritable(p Position) (ok bool, reason string) {
 			b.Size, b.Size)
 	}
 
-	idx := p[1]*b.Size + p[0]
-	if b.Marks[idx] != 0 {
+	if b.Marks[p.ToIndex(b.Size)] != 0 {
 		return false, fmt.Sprintf("position is not empty")
 	}
 

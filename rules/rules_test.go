@@ -7,7 +7,7 @@ import (
 	"go-tictactoe/test"
 )
 
-func TestIsFinished(t *testing.T) {
+func TestIsFull(t *testing.T) {
 	tables := []struct {
 		marks mechanics.Marks
 		size  int

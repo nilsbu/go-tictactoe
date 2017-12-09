@@ -6,6 +6,25 @@ import (
 	"go-tictactoe/test"
 )
 
+func TestNewPosition(t *testing.T) {
+	tables := []struct {
+		i int
+		s int
+		p Position
+	}{
+		{0, 2, Position{0, 0}},
+		{1, 2, Position{1, 0}},
+		{8, 3, Position{2, 2}},
+	}
+
+	for i, table := range tables {
+		if p := NewPosition(table.i, table.s); table.p != p {
+			t.Errorf("position in step %v: expected = %v, actual = %v", i+1, table.p,
+				p)
+		}
+	}
+}
+
 func TestBoard_Put(t *testing.T) {
 	tables := []struct {
 		pos  Position
@@ -19,7 +38,7 @@ func TestBoard_Put(t *testing.T) {
 	}
 
 	var b = Board{make(Marks, 3*3), 3}
-	var currentPlayer Player
+	var currentPlayer Player = 1
 
 	for i, table := range tables {
 		switch err := b.Put(table.pos, currentPlayer); false {
@@ -33,7 +52,7 @@ func TestBoard_Put(t *testing.T) {
 		}
 
 		if table.err == test.NoError {
-			currentPlayer = (currentPlayer + 1) % 2
+			currentPlayer = currentPlayer%2 + 1
 		}
 	}
 }

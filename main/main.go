@@ -8,14 +8,18 @@ import (
 )
 
 func main() {
-	game, err := mechanics.NewGame(3, 2, 2)
+	game, err := mechanics.NewGame(3, 2, 1)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	human := actor.Human{ID: 0}
+	players := []actor.Actor{
+		&actor.Human{ID: 1},
+		&actor.Computer{ID: 2, Players: 2},
+	}
+
 	for {
-		pos, err := human.GetMove(game.Board)
+		pos, err := players[game.CurrentPlayer.Next-1].GetMove(game.Board)
 		if err != nil {
 			break
 		}

@@ -42,7 +42,7 @@ type PlayerCounter struct {
 // Inc moves the counter on to the next player.
 // If the last player was reached it starts with the first player.
 func (pc *PlayerCounter) Inc() {
-	pc.Next = (pc.Next + Player(1)) % pc.Total
+	pc.Next = pc.Next%pc.Total + 1
 }
 
 // NewGame initializes a Game.
@@ -74,7 +74,7 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 	return &Game{
 		playerArr,
 		Board{make(Marks, boardSize*boardSize), boardSize},
-		PlayerCounter{Next: Player(0), Total: Player(players)},
+		PlayerCounter{Next: 1, Total: Player(players)},
 	}, nil
 }
 

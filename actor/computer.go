@@ -1,44 +1,69 @@
 package actor
 
 import (
-	"fmt"
-
-	"go-tictactoe/mechanics"
+	m "go-tictactoe/mechanics"
+	r "go-tictactoe/rules"
 )
 
 // Computer represents a computer player.
 // It implements a function to make a move.
 type Computer struct {
-	Players int
+	ID      m.Player
+	Players m.Player
 }
 
 // GetMove makes the next move for the computer player calling it.
-func (c *Computer) GetMove(b mechanics.Board) (mechanics.Position, error) {
-	return mechanics.Position{0, 0}, fmt.Errorf("not implemented")
+func (c *Computer) GetMove(b m.Board) (m.Position, error) {
+	p, _, _ := computeOptimalMoveSeq(b, c.ID, c.Players)
+	return m.NewPosition(p, b.Size), nil
 }
 
 // computeOptimalMoveSeq finds the optimal move for the player.
-func computeOptimalMoveSeq(marks []mechanics.Player,
-	// TODO unfinished, doesn't work
-	current mechanics.Player,
-	numPlayers int) (pos int, winner mechanics.Player) {
+func computeOptimalMoveSeq(b m.Board, current m.Player,
+	numPlayers m.Player) (pos int, winner m.Player,
+	hasWinner bool) {
 
-	winner = -1
-	for p := 0; p < len(marks); p++ {
-		if marks[p] > 0 {
+	winner = 0
+	hasWinner = true
+	for p := 0; p < len(b.Marks); p++ {
+		if b.Marks[p] > 0 {
 			continue
 		}
 
-		marks[p] = current
-		nextPlayer := mechanics.Player((int(current) + 1) % numPlayers)
-		_, res := computeOptimalMoveSeq(marks, nextPlayer, numPlayers)
-		marks[p] = 0
+		tmpWinner, tmpHas := attempt(b, p, current, numPlayers)
 
-		if winner < res {
-			winner = res
+		switch {
+		case tmpWinner == current:
+			return p, current, true
+		case !tmpHas:
 			pos = p
+			winner = 0
+			hasWinner = false
+		case hasWinner:
+			pos = p
+			winner = tmpWinner
 		}
 	}
+
+	return
+}
+
+func attempt(b m.Board, p int, current m.Player,
+	numPlayers m.Player) (winner m.Player, hasWinner bool) {
+
+	defer func() { b.Marks[p] = 0 }()
+	b.Marks[p] = current
+
+	if winner, hasWinner = r.GetWinner(b); hasWinner {
+		return winner, hasWinner
+	}
+
+	if r.IsFull(b) {
+		return m.Player(0), false
+	}
+
+	nextPlayer := m.Player((current % numPlayers) + 1)
+	_, winner, hasWinner = computeOptimalMoveSeq(b, nextPlayer, numPlayers)
 
 	return
 }

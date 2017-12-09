@@ -8,11 +8,11 @@ import (
 
 func TestPlayerCounter_Inc(t *testing.T) {
 	for n := 2; n <= 4; n++ {
-		pc := PlayerCounter{Next: 0, Total: Player(n)}
+		pc := PlayerCounter{Next: 1, Total: Player(n)}
 
 		for i := 0; i <= 2*n; i++ {
-			if pc.Next != Player(i%n) {
-				t.Errorf("after %v increases, counter should be %v but was %v", i, i%n,
+			if pc.Next != Player(i%n)+1 {
+				t.Errorf("after %v increases, counter should be %v but was %v", i, i%n+1,
 					pc.Next)
 				break
 			}
@@ -57,8 +57,8 @@ func TestNewGame(t *testing.T) {
 		case game.Board.Size == table.boardSize:
 			t.Errorf("board size in step %v: expected = %v, actual = %v", i+1,
 				table.boardSize, game.Board.Size)
-		case game.CurrentPlayer.Next == Player(0):
-			t.Errorf("next player in step %v: expected = 0, actual = %v", i+1,
+		case game.CurrentPlayer.Next == 1:
+			t.Errorf("next player in step %v: expected = 1, actual = %v", i+1,
 				game.CurrentPlayer.Next)
 		}
 	}
@@ -83,11 +83,11 @@ func TestGame_Move2(t *testing.T) {
 		post       Marks
 		err        test.ErrorAnticipation
 	}{
-		{[2]int{0, 0}, 0, 1, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
-		{[2]int{1, 1}, 1, 0, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
-		{[2]int{2, 2}, 1, 0, nil, test.AnyError}, // False NextPlayer
-		{[2]int{1, 1}, 0, 0, nil, test.AnyError}, // Field not empty
-		{[2]int{4, 1}, 0, 0, nil, test.AnyError}, // Outside board
+		{[2]int{0, 0}, 1, 2, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
+		{[2]int{1, 1}, 2, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
+		{[2]int{2, 2}, 2, 1, nil, test.AnyError}, // False NextPlayer
+		{[2]int{1, 1}, 1, 1, nil, test.AnyError}, // Field not empty
+		{[2]int{4, 1}, 1, 1, nil, test.AnyError}, // Outside board
 	}
 
 	game, err := NewGame(3, 2, 0)
