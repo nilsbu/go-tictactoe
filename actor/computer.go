@@ -12,9 +12,14 @@ type Computer struct {
 	Players m.Player
 }
 
+func (c *Computer) getMoveSequential(b m.Board) (m.Position, error) {
+	p, _, _ := computeOptimalMoveSeq(b, c.ID, c.Players)
+	return m.NewPosition(p, b.Size), nil
+}
+
 // GetMove makes the next move for the computer player calling it.
 func (c *Computer) GetMove(b m.Board) (m.Position, error) {
-	p, _, _ := computeOptimalMoveSeq(b, c.ID, c.Players)
+	p := computeOptimalMovePar(b, c.ID, c.Players)
 	return m.NewPosition(p, b.Size), nil
 }
 
@@ -64,5 +69,58 @@ func attempt(b m.Board, p int, current m.Player, numPlayers m.Player) (
 	nextPlayer := m.Player((current % numPlayers) + 1)
 	_, winner, hasWinner = computeOptimalMoveSeq(b, nextPlayer, numPlayers)
 
+	return
+}
+
+const (
+	nop = iota
+	blocked
+	loss
+	draw
+	win
+)
+
+func computeOptimalMovePar(b m.Board, current m.Player, numPlayers m.Player) (
+	pos int) {
+
+	type answer struct {
+		v int
+		p int
+	}
+
+	wait := make(chan answer, len(b.Marks))
+
+	for p := 0; p < len(b.Marks); p++ {
+		if b.Marks[p] > 0 {
+			wait <- answer{v: blocked, p: p}
+			continue
+		}
+
+		go func(i int, cur m.Player, numP m.Player) {
+			mcop := make(m.Marks, len(b.Marks))
+			copy(mcop, b.Marks)
+			bcop := m.Board{Marks: mcop, Size: b.Size}
+			tmpWinner, tmpHas := attempt(bcop, i, cur, numP)
+
+			switch {
+			case tmpWinner == current:
+				wait <- answer{v: win, p: i}
+			case !tmpHas:
+				wait <- answer{v: draw, p: i}
+			default:
+				wait <- answer{v: loss, p: i}
+			}
+		}(p, current, numPlayers)
+	}
+
+	var res = blocked
+	for p := 0; p < len(b.Marks); p++ {
+		a := <-wait
+
+		if res < a.v {
+			pos = a.p
+			res = a.v
+		}
+	}
 	return
 }

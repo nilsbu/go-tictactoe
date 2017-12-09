@@ -1,9 +1,12 @@
 package test
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestCond(t *testing.T) {
-	tables := []struct {
+	testCases := []struct {
 		a, b, c bool
 	}{
 		{false, false, true},
@@ -12,11 +15,13 @@ func TestCond(t *testing.T) {
 		{true, true, true},
 	}
 
-	for _, table := range tables {
-		switch c := Cond(table.a, table.b); false {
-		case table.c == c:
-			t.Errorf("false result of conditional %v -> %v: expected =  %v, actual "+
-				"= %v", table.a, table.b, table.c, c)
-		}
+	for _, tc := range testCases {
+		t.Run(fmt.Sprintf(" %v -> %v", tc.a, tc.b), func(t *testing.T) {
+			switch c := Cond(tc.a, tc.b); false {
+			case tc.c == c:
+				t.Errorf("false result of conditional: expected =  %v, actual = %v",
+					tc.c, c)
+			}
+		})
 	}
 }

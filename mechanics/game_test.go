@@ -1,6 +1,7 @@
 package mechanics
 
 import (
+	"fmt"
 	"testing"
 
 	"go-tictactoe/test"
@@ -10,21 +11,22 @@ func TestPlayerCounter_Inc(t *testing.T) {
 	for n := 2; n <= 4; n++ {
 		pc := PlayerCounter{Next: 1, Total: Player(n)}
 
-		for i := 0; i <= 2*n; i++ {
-			if pc.Next != Player(i%n)+1 {
-				t.Errorf("after %v increases, counter should be %v but was %v", i, i%n+1,
-					pc.Next)
-				break
+		t.Run(fmt.Sprintf("n=%v", n), func(t *testing.T) {
+			for i := 0; i <= 2*n; i++ {
+				if pc.Next != Player(i%n+1) {
+					t.Errorf("after %v increases, counter should be %v but was %v",
+						i, i%n+1, pc.Next)
+					break
+				}
+				pc.Inc()
 			}
-
-			pc.Inc()
-		}
+		})
 	}
 }
 
 func TestNewGame(t *testing.T) {
-	tables := []struct {
-		boardSize    int
+	testCases := []struct {
+		size         int
 		humanPlayers int
 		players      []PlayerType
 		err          test.ErrorAnticipation
@@ -37,30 +39,33 @@ func TestNewGame(t *testing.T) {
 		{3, 3, []PlayerType{Human, Human}, test.AnyError},
 	}
 
-	for i, table := range tables {
-		switch game, err :=
-			NewGame(table.boardSize, len(table.players), table.humanPlayers); false {
-		case test.Cond(table.err == test.AnyError, err != nil):
-			t.Errorf("expected error in step %v but none was returned", i+1)
-		case test.Cond(table.err == test.NoError, err == nil):
-			t.Errorf("no error expected in step %v but one was returned", i+1)
-		case table.err == test.NoError:
-		case len(game.Players) == len(table.players):
-			t.Errorf("number of players in step %v: expected = %v, actual = %v", i+1,
-				len(table.players), len(game.Players))
-		case equals(table.players, game.Players):
-			t.Errorf("player setup in step %v: expected = %v, actual %v", i+1,
-				table.players, game.Players)
-		case len(game.Board.Marks) == table.boardSize*table.boardSize:
-			t.Errorf("marks size in step %v: expected = %v, actual = %v", i+1,
-				table.boardSize*table.boardSize, len(game.Board.Marks))
-		case game.Board.Size == table.boardSize:
-			t.Errorf("board size in step %v: expected = %v, actual = %v", i+1,
-				table.boardSize, game.Board.Size)
-		case game.CurrentPlayer.Next == 1:
-			t.Errorf("next player in step %v: expected = 1, actual = %v", i+1,
-				game.CurrentPlayer.Next)
-		}
+	for i, tc := range testCases {
+		s := fmt.Sprintf("#%v: %vx%v with %v", i, tc.size, tc.size, tc.players)
+		t.Run(s, func(t *testing.T) {
+			switch game, err :=
+				NewGame(tc.size, len(tc.players), tc.humanPlayers); false {
+			case test.Cond(tc.err == test.AnyError, err != nil):
+				t.Errorf("expected error but none was returned")
+			case test.Cond(tc.err == test.NoError, err == nil):
+				t.Errorf("no error expected but one was returned")
+			case tc.err == test.NoError:
+			case len(game.Players) == len(tc.players):
+				t.Errorf("number of players: expected = %v, actual = %v",
+					len(tc.players), len(game.Players))
+			case equals(tc.players, game.Players):
+				t.Errorf("player setup: expected = %v, actual %v",
+					tc.players, game.Players)
+			case len(game.Board.Marks) == tc.size*tc.size:
+				t.Errorf("marks size: expected = %v, actual = %v",
+					tc.size*tc.size, len(game.Board.Marks))
+			case game.Board.Size == tc.size:
+				t.Errorf("board size: expected = %v, actual = %v",
+					tc.size, game.Board.Size)
+			case game.CurrentPlayer.Next == 1:
+				t.Errorf("next player: expected = 1, actual = %v",
+					game.CurrentPlayer.Next)
+			}
+		})
 	}
 }
 
@@ -76,12 +81,12 @@ func equals(ps []PlayerType, os []PlayerType) bool {
 
 // TODO Test NextPlayer for more than two players
 func TestGame_Move2(t *testing.T) {
-	tables := []struct {
-		pos        Position
-		playerPre  Player
-		playerPost Player
-		post       Marks
-		err        test.ErrorAnticipation
+	testCases := []struct {
+		pos      Position
+		plyrPre  Player
+		plyrPost Player
+		post     Marks
+		err      test.ErrorAnticipation
 	}{
 		{[2]int{0, 0}, 1, 2, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
 		{[2]int{1, 1}, 2, 1, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
@@ -96,19 +101,22 @@ func TestGame_Move2(t *testing.T) {
 		return
 	}
 
-	for i, table := range tables {
-		switch err := game.Move(table.pos, table.playerPre); false {
-		case test.Cond(table.err == test.AnyError, err != nil):
-			t.Errorf("expected error in step %v but none was returned", i+1)
-		case test.Cond(table.err == test.NoError, err == nil):
-			t.Errorf("no error expected in step %v but one was returned", i+1)
-		case table.err == test.NoError:
-		case game.Board.Marks.Equal(table.post):
-			t.Errorf("board different in step %v: expected = %v, actual = %v", i+1,
-				table.post, game.Board.Marks)
-		case game.CurrentPlayer.Next == table.playerPost:
-			t.Errorf("next player wrong in step %v: expected = %v, actual = %v", i+1,
-				table.playerPost, game.CurrentPlayer)
-		}
+	for i, tc := range testCases {
+		s := fmt.Sprintf("#%v: %v at %v", i, tc.plyrPre, tc.pos)
+		t.Run(s, func(t *testing.T) {
+			switch err := game.Move(tc.pos, tc.plyrPre); false {
+			case test.Cond(tc.err == test.AnyError, err != nil):
+				t.Errorf("expected error but none was returned")
+			case test.Cond(tc.err == test.NoError, err == nil):
+				t.Errorf("no error expected but one was returned")
+			case tc.err == test.NoError:
+			case game.Board.Marks.Equal(tc.post):
+				t.Errorf("board different: expected = %v, actual = %v",
+					tc.post, game.Board.Marks)
+			case game.CurrentPlayer.Next == tc.plyrPost:
+				t.Errorf("next player wrong: expected = %v, actual = %v",
+					tc.plyrPost, game.CurrentPlayer)
+			}
+		})
 	}
 }

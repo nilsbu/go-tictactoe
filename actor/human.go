@@ -36,6 +36,10 @@ func (h *Human) GetMove(b m.Board) (m.Position, error) {
 	return m.Position{0, 0}, errors.New("gathering input failed unexpectedly")
 }
 
+// isAcceptableMove checks if an input string corresponds to an acceptable move.
+// A position is returned if the input is acceptable, a message for the user is
+// is returned if the input was invalid.
+// If the input process should be aborted, an error is returned.
 func isAcceptableMove(b m.Board, s string) (pos m.Position,
 	msg string, err error) {
 

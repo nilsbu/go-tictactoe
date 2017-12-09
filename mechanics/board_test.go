@@ -1,13 +1,14 @@
 package mechanics
 
 import (
+	"fmt"
 	"testing"
 
 	"go-tictactoe/test"
 )
 
 func TestNewPosition(t *testing.T) {
-	tables := []struct {
+	testCases := []struct {
 		i int
 		s int
 		p Position
@@ -15,13 +16,15 @@ func TestNewPosition(t *testing.T) {
 		{0, 2, Position{0, 0}},
 		{1, 2, Position{1, 0}},
 		{8, 3, Position{2, 2}},
+		{8, 4, Position{0, 2}},
 	}
 
-	for i, table := range tables {
-		if p := NewPosition(table.i, table.s); table.p != p {
-			t.Errorf("position in step %v: expected = %v, actual = %v", i+1, table.p,
-				p)
-		}
+	for i, tc := range testCases {
+		t.Run(fmt.Sprintf("#%v: %v", i, tc.p), func(t *testing.T) {
+			if p := NewPosition(tc.i, tc.s); tc.p != p {
+				t.Errorf("expected = %v, actual = %v", tc.p, p)
+			}
+		})
 	}
 }
 

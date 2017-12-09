@@ -1,9 +1,10 @@
 package actor
 
 import (
+	"fmt"
 	"testing"
 
-	"go-tictactoe/mechanics"
+	m "go-tictactoe/mechanics"
 	"go-tictactoe/test"
 )
 
@@ -16,47 +17,48 @@ const (
 )
 
 func TestIsAcceptableMove(t *testing.T) {
-	b := mechanics.Board{Marks: make(mechanics.Marks, 9), Size: 3}
+	b := m.Board{Marks: make(m.Marks, 9), Size: 3}
 	b.Marks[3] = 1
 
-	tables := []struct {
-		input  string
-		pos    mechanics.Position
+	testCases := []struct {
+		s      string
+		pos    m.Position
 		status moveCode
 	}{
-		{"quit", mechanics.Position{0, 0}, quit},
-		{"exit ", mechanics.Position{0, 0}, quit},
-		{" exit", mechanics.Position{0, 0}, quit},
-		{"asd", mechanics.Position{0, 0}, fail},
-		{"x4,1", mechanics.Position{0, 0}, fail},
-		{"4,1,2", mechanics.Position{0, 0}, fail},
-		{"1232", mechanics.Position{0, 0}, fail},
-		{"", mechanics.Position{0, 0}, fail},
-		{"1,0", mechanics.Position{1, 0}, ok},
-		{"1,01", mechanics.Position{1, 1}, ok},
-		{"2, 1", mechanics.Position{2, 1}, ok},
-		{"3,2", mechanics.Position{0, 0}, fail}, // Out of bounds
-		{"0,1", mechanics.Position{0, 0}, fail}, // Field not free
+		{"quit", m.Position{0, 0}, quit},
+		{"exit ", m.Position{0, 0}, quit},
+		{" exit", m.Position{0, 0}, quit},
+		{"asd", m.Position{0, 0}, fail},
+		{"x4,1", m.Position{0, 0}, fail},
+		{"4,1,2", m.Position{0, 0}, fail},
+		{"1232", m.Position{0, 0}, fail},
+		{"", m.Position{0, 0}, fail},
+		{"1,0", m.Position{1, 0}, ok},
+		{"1,01", m.Position{1, 1}, ok},
+		{"2, 1", m.Position{2, 1}, ok},
+		{"3,2", m.Position{0, 0}, fail}, // Out of bounds
+		{"0,1", m.Position{0, 0}, fail}, // Field not free
 		// No need to test bounds and written fields, see board tests
 	}
 
-	for i, table := range tables {
-		switch pos, msg, err := isAcceptableMove(b, table.input); false {
-		case test.Cond(table.status == quit, err != nil):
-			t.Errorf("error expected in step %v but not returned", i+1)
-		case test.Cond(table.status == quit, msg == ""):
-			t.Errorf("message has to be \"\" in step %v since quit is requested", i+1)
-		case table.status != quit:
-		case err == nil:
-			t.Errorf("no error expected in step %v but was returned", i+1)
-		case test.Cond(table.status == fail, msg != ""):
-			t.Errorf("expected failure in step %v but passed", i+1)
-		case table.status == ok:
-		case msg == "":
-			t.Errorf("failed unexpectedly in step %v", i+1)
-		case table.pos == pos:
-			t.Errorf("false position in step %v, expected = %v, actual = %v",
-				i+1, table.pos, pos)
-		}
+	for i, tc := range testCases {
+		t.Run(fmt.Sprintf("#%v: \"%v\"", i, tc.s), func(t *testing.T) {
+			switch pos, msg, err := isAcceptableMove(b, tc.s); false {
+			case test.Cond(tc.status == quit, err != nil):
+				t.Errorf("error expected but not returned")
+			case test.Cond(tc.status == quit, msg == ""):
+				t.Errorf("message has to be \"\" since quit is requested")
+			case tc.status != quit:
+			case err == nil:
+				t.Errorf("no error expected but was returned")
+			case test.Cond(tc.status == fail, msg != ""):
+				t.Errorf("expected failure but passed")
+			case tc.status == ok:
+			case msg == "":
+				t.Errorf("no message should have been returned")
+			case tc.pos == pos:
+				t.Errorf("false position, expected = %v, actual = %v", tc.pos, pos)
+			}
+		})
 	}
 }
