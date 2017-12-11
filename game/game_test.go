@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	a "go-tictactoe/actor"
 	b "go-tictactoe/board"
 	"go-tictactoe/test"
 )
@@ -29,15 +30,18 @@ func TestNewGame(t *testing.T) {
 	testCases := []struct {
 		size         int
 		humanPlayers int
-		players      []PlayerType
+		players      []a.Actor
 		err          test.ErrorAnticipation
 	}{
-		{3, 2, []PlayerType{Human, Human}, test.NoError},
-		{4, 1, []PlayerType{Human, Computer}, test.NoError},
-		{5, 0, []PlayerType{Computer, Computer, Computer}, test.NoError},
-		{3, 1, []PlayerType{Human}, test.AnyError},
-		{2, 1, []PlayerType{Human, Computer}, test.AnyError},
-		{3, 3, []PlayerType{Human, Human}, test.AnyError},
+		{3, 2, []a.Actor{&a.Human{ID: 1}, &a.Human{ID: 2}}, test.NoError},
+		{4, 1, []a.Actor{&a.Human{ID: 1}, &a.Computer{ID: 2, Players: 2}},
+			test.NoError},
+		{5, 0, []a.Actor{&a.Computer{ID: 1, Players: 3}, &a.Computer{ID: 2,
+			Players: 3}, &a.Computer{ID: 3, Players: 3}}, test.NoError},
+		{3, 1, []a.Actor{&a.Human{ID: 1}}, test.AnyError},
+		{2, 1, []a.Actor{&a.Human{ID: 1}, &a.Computer{ID: 2, Players: 2}},
+			test.AnyError},
+		{3, 3, []a.Actor{&a.Human{ID: 1}, &a.Human{ID: 2}}, test.AnyError},
 	}
 
 	for i, tc := range testCases {
@@ -53,7 +57,7 @@ func TestNewGame(t *testing.T) {
 			case len(game.Players) == len(tc.players):
 				t.Errorf("number of players: expected = %v, actual = %v",
 					len(tc.players), len(game.Players))
-			case equals(tc.players, game.Players):
+			case equalsActors(tc.players, game.Players):
 				t.Errorf("player setup: expected = %v, actual %v",
 					tc.players, game.Players)
 			case len(game.Board.Marks) == tc.size*tc.size:
@@ -70,14 +74,31 @@ func TestNewGame(t *testing.T) {
 	}
 }
 
-func equals(ps []PlayerType, os []PlayerType) bool {
+func equalsActors(ps []a.Actor, os []a.Actor) bool {
 	// Same length is assumed
 	for i := 0; i < len(ps); i++ {
-		if ps[i] != os[i] {
+		if !equals(ps[i], os[i]) {
 			return false
 		}
 	}
 	return true
+}
+
+func equals(p a.Actor, o a.Actor) bool {
+	if pv, aok := p.(*a.Human); aok {
+		if ov, bok := o.(*a.Human); bok {
+			return pv.ID == ov.ID
+		}
+		return false
+	}
+	if pv, aok := p.(*a.Computer); aok {
+		if ov, bok := o.(*a.Computer); bok {
+			fmt.Println(pv.ID, ov.ID, pv.Players, ov.Players)
+			return pv.ID == ov.ID && pv.Players == ov.Players
+		}
+		return false
+	}
+	return false
 }
 
 // TODO Test NextPlayer for more than two players

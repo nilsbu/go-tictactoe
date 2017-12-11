@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 
+	a "go-tictactoe/actor"
 	b "go-tictactoe/board"
 )
 
@@ -17,7 +18,7 @@ const MinBoardSize = 3
 
 // Game holds the information about the current state of the game.
 type Game struct {
-	Players []PlayerType
+	Players []a.Actor
 	Board   b.Board
 
 	CurrentPlayer PlayerCounter
@@ -63,14 +64,14 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 			humanPlayers, players)
 	}
 
-	playerArr := make([]PlayerType, players)
+	playerArr := make([]a.Actor, players)
 
-	i := 0
-	for ; i < humanPlayers; i++ {
-		playerArr[i] = Human
+	var i b.Player
+	for ; i < b.Player(humanPlayers); i++ {
+		playerArr[i] = a.Actor(&a.Human{ID: i + 1})
 	}
-	for ; i < players; i++ {
-		playerArr[i] = Computer
+	for ; i < b.Player(players); i++ {
+		playerArr[i] = a.Actor(&a.Computer{ID: i + 1, Players: b.Player(players)})
 	}
 
 	return &Game{
