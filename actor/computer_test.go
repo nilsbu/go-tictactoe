@@ -135,6 +135,12 @@ func bench(bm *testing.B, i int, parallel bool) {
 	}
 }
 
+func (c *Computer) getMoveSequential(bo b.Board) (b.Position, error) {
+	p, _, _ := computeOptimalMoveSeq(bo, c.ID, c.Players)
+	return b.NewPosition(p, bo.Size), nil
+}
+
+// TODO put in one function
 func BenchmarkComputerGetMove1S(bm *testing.B) { bench(bm, 1, false) }
 func BenchmarkComputerGetMove2S(bm *testing.B) { bench(bm, 2, false) }
 func BenchmarkComputerGetMove3S(bm *testing.B) { bench(bm, 3, false) }

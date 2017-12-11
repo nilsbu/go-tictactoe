@@ -18,6 +18,7 @@ type Human struct {
 
 // GetMove returns the move the player makes after prompting them for input.
 func (h *Human) GetMove(bo b.Board) (b.Position, error) {
+	// TODO test, move scanner in struct
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Printf("Your move, player %v:\n", h.ID)

@@ -93,7 +93,6 @@ func equals(p a.Actor, o a.Actor) bool {
 	}
 	if pv, aok := p.(*a.Computer); aok {
 		if ov, bok := o.(*a.Computer); bok {
-			fmt.Println(pv.ID, ov.ID, pv.Players, ov.Players)
 			return pv.ID == ov.ID && pv.Players == ov.Players
 		}
 		return false

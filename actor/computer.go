@@ -12,11 +12,6 @@ type Computer struct {
 	Players b.Player
 }
 
-func (c *Computer) getMoveSequential(bo b.Board) (b.Position, error) {
-	p, _, _ := computeOptimalMoveSeq(bo, c.ID, c.Players)
-	return b.NewPosition(p, bo.Size), nil
-}
-
 // GetMove makes the next move for the computer player calling it.
 func (c *Computer) GetMove(bo b.Board) (b.Position, error) {
 	p := computeOptimalMovePar(bo, c.ID, c.Players)

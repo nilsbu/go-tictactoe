@@ -84,7 +84,6 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 // Move adds a players move to the board.
 // It is checked if the next move belongs to the player.
 func (g *Game) Move(pos b.Position, player b.Player) error {
-	// TODO What about false moves?
 	if player != g.CurrentPlayer.Next {
 		return fmt.Errorf("next move belongs to player %v", g.CurrentPlayer.Next)
 	}
