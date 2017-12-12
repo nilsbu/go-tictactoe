@@ -1,7 +1,6 @@
 package board
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 )
@@ -11,11 +10,23 @@ import (
 // the players.
 var symbols = []string{" ", "x", "o", "8", "v", "^"}
 
-// Board is the board the game is played on.
+// FIXME symbols should not be limited without checks
+
+// Board provides access to the board that the game is played on.
+// Put makes marks at the requested position.
+// IsWritable finds out if a position is stil free.
+// Get returns a copy of the data.
+type Board interface {
+	Put(p Position, player Player) (ok bool, reason string)
+	IsWritable(p Position) (ok bool, reason string)
+	Get() Data
+}
+
+// Data is the board the game is played on.
 // The size is customizable but the board is always quadratic.
 // Marks stores the moves the players have made.
 // 0 means the board is empty, all other values represent the player numbers.
-type Board struct {
+type Data struct {
 	Marks Marks
 	Size  int
 }
@@ -44,7 +55,7 @@ func (p Position) ToIndex(s int) int {
 	return p[1]*s + p[0]
 }
 
-func (bo Board) String() string {
+func (bo Data) String() string {
 	// TODO move this to another place
 	s := strings.Repeat("-", 2*bo.Size+1) + "\n"
 
@@ -65,19 +76,19 @@ func (bo Board) String() string {
 // Put makes a mark for a player on the board.
 // If the position is not on the board or a mark has already been made at the
 // specified position, Put returns an error.
-func (bo Board) Put(p Position, player Player) error {
-	if ok, reason := bo.IsWritable(p); ok == false {
-		return errors.New(reason)
+func (bo Data) Put(p Position, player Player) (ok bool, reason string) {
+	if ok, reason := bo.IsWritable(p); !ok {
+		return ok, reason
 	}
 
 	bo.Marks[p.ToIndex(bo.Size)] = player
-	return nil
+	return true, ""
 }
 
 // IsWritable checks is a position can be written in.
 // It has to be within the limits of the board and empty.
 // If the position is not writable a reason is given.
-func (bo Board) IsWritable(p Position) (ok bool, reason string) {
+func (bo Data) IsWritable(p Position) (ok bool, reason string) {
 	if p[0] < 0 || p[0] >= bo.Size || p[1] < 0 || p[1] >= bo.Size {
 		return false, fmt.Sprintf("position out of range, board has size %vx%v",
 			bo.Size, bo.Size)
@@ -90,7 +101,22 @@ func (bo Board) IsWritable(p Position) (ok bool, reason string) {
 	return true, ""
 }
 
+// Get returns a copy of the board.
+func (bo Data) Get() Data {
+	// TODO test
+	result := Data{Marks: make(Marks, bo.Size*bo.Size), Size: bo.Size}
+
+	for i, v := range bo.Marks {
+		result.Marks[i] = v
+	}
+
+	return result
+}
+
+// Equal returns true when the Marks in the parameter board are equal to the
+// one of the receiver.
 func (marks Marks) Equal(other Marks) bool {
+	// TODO this function is kinda ugly, since it is only used in tests
 	if len(marks) != len(other) {
 		return false
 	}

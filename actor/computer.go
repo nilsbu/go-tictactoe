@@ -2,7 +2,6 @@ package actor
 
 import (
 	b "go-tictactoe/board"
-	r "go-tictactoe/rules"
 )
 
 // Computer represents a computer player.
@@ -14,12 +13,13 @@ type Computer struct {
 
 // GetMove makes the next move for the computer player calling it.
 func (c *Computer) GetMove(bo b.Board) (b.Position, error) {
-	p := computeOptimalMovePar(bo, c.ID, c.Players)
-	return b.NewPosition(p, bo.Size), nil
+	d := bo.Get()
+	p := computeOptimalMovePar(d, c.ID, c.Players)
+	return b.NewPosition(p, d.Size), nil
 }
 
 // computeOptimalMoveSeq finds the optimal move for the player.
-func computeOptimalMoveSeq(bo b.Board, current b.Player, numPlayers b.Player) (
+func computeOptimalMoveSeq(bo b.Data, current b.Player, numPlayers b.Player) (
 	pos int, winner b.Player, hasWinner bool) {
 
 	winner = 0
@@ -47,17 +47,17 @@ func computeOptimalMoveSeq(bo b.Board, current b.Player, numPlayers b.Player) (
 	return
 }
 
-func attempt(bo b.Board, p int, current b.Player, numPlayers b.Player) (
+func attempt(bo b.Data, p int, current b.Player, numPlayers b.Player) (
 	winner b.Player, hasWinner bool) {
 
 	defer func() { bo.Marks[p] = 0 }()
 	bo.Marks[p] = current
 
-	if winner, hasWinner = r.GetWinner(bo); hasWinner {
+	if winner, hasWinner = bo.GetWinner(); hasWinner {
 		return winner, hasWinner
 	}
 
-	if r.IsFull(bo) {
+	if bo.IsFull() {
 		return b.Player(0), false
 	}
 
@@ -75,7 +75,7 @@ const (
 	win
 )
 
-func computeOptimalMovePar(bo b.Board, current b.Player, numPlayers b.Player) (
+func computeOptimalMovePar(bo b.Data, current b.Player, numPlayers b.Player) (
 	pos int) {
 
 	type answer struct {
@@ -94,7 +94,7 @@ func computeOptimalMovePar(bo b.Board, current b.Player, numPlayers b.Player) (
 		go func(i int, cur b.Player, numP b.Player) {
 			mcop := make(b.Marks, len(bo.Marks))
 			copy(mcop, bo.Marks)
-			bcop := b.Board{Marks: mcop, Size: bo.Size}
+			bcop := b.Data{Marks: mcop, Size: bo.Size}
 			tmpWinner, tmpHas := attempt(bcop, i, cur, numP)
 
 			switch {

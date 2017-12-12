@@ -1,11 +1,19 @@
-package rules
+package board
 
-import b "go-tictactoe/board"
+// Outcome is an interface that figures out the outcome of the game based on the
+// game's rules.
+// GetWinner returns the winner if someone has won the game.
+// IsFull tells if the board is full.
+type Outcome interface {
+	// TODO unify to Get()
+	GetWinner() (id Player, hasWinner bool)
+	IsFull() bool
+}
 
 // IsFull checks if a board is full.
-func IsFull(bo b.Board) bool {
+func (bo Data) IsFull() bool {
 	for _, v := range bo.Marks {
-		if v == b.Player(0) {
+		if v == Player(0) {
 			return false
 		}
 	}
@@ -16,7 +24,7 @@ func IsFull(bo b.Board) bool {
 // GetWinner determines if there a player has won the game.
 // NoWinner is returned if this is not the case, otherwise the player's ID is
 // returned.
-func GetWinner(bo b.Board) (id b.Player, hasWinner bool) {
+func (bo Data) GetWinner() (id Player, hasWinner bool) {
 	id, hasWinner = getRowWinner(bo)
 	if hasWinner {
 		return
@@ -30,7 +38,7 @@ func GetWinner(bo b.Board) (id b.Player, hasWinner bool) {
 	return getDiagonalWinner(bo)
 }
 
-func getRowWinner(bo b.Board) (id b.Player, hasWinner bool) {
+func getRowWinner(bo Data) (id Player, hasWinner bool) {
 	for y := 0; y < bo.Size; y++ {
 		if bo.Marks[y*bo.Size] == 0 {
 			continue
@@ -50,7 +58,7 @@ func getRowWinner(bo b.Board) (id b.Player, hasWinner bool) {
 	return 0, false
 }
 
-func getColumnWinner(bo b.Board) (id b.Player, hasWinner bool) {
+func getColumnWinner(bo Data) (id Player, hasWinner bool) {
 	for x := 0; x < bo.Size; x++ {
 		if bo.Marks[x] == 0 {
 			continue
@@ -70,7 +78,7 @@ func getColumnWinner(bo b.Board) (id b.Player, hasWinner bool) {
 	return 0, false
 }
 
-func getDiagonalWinner(bo b.Board) (id b.Player, hasWinner bool) {
+func getDiagonalWinner(bo Data) (id Player, hasWinner bool) {
 	if bo.Marks[0] != 0 {
 		for xy := 1; xy < bo.Size; xy++ {
 			if bo.Marks[xy*bo.Size+xy] != bo.Marks[0] {

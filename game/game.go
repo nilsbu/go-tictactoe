@@ -76,7 +76,7 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 
 	return &Game{
 		playerArr,
-		b.Board{Marks: make(b.Marks, boardSize*boardSize), Size: boardSize},
+		b.Data{Marks: make(b.Marks, boardSize*boardSize), Size: boardSize},
 		PlayerCounter{Next: 1, Total: b.Player(players)},
 	}, nil
 }
@@ -88,11 +88,10 @@ func (g *Game) Move(pos b.Position, player b.Player) error {
 		return fmt.Errorf("next move belongs to player %v", g.CurrentPlayer.Next)
 	}
 
-	if ok, reason := g.Board.IsWritable(pos); !ok {
+	if ok, reason := g.Board.Put(pos, player); !ok {
 		return errors.New(reason)
 	}
 
-	g.Board.Put(pos, player)
 	g.CurrentPlayer.Inc()
 
 	return nil

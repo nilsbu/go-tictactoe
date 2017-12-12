@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 
+	b "go-tictactoe/board"
 	g "go-tictactoe/game"
-	"go-tictactoe/rules"
 )
 
 func main() {
@@ -23,13 +23,13 @@ func main() {
 		game.Move(pos, game.CurrentPlayer.Next)
 		fmt.Println(game.Board)
 
-		if w, hw := rules.GetWinner(game.Board); hw {
+		if w, hw := game.Board.(b.Outcome).GetWinner(); hw {
 			fmt.Printf("Player %v won, congrats.\n", w)
 			fmt.Println("Congrats.")
 			break
 		}
 
-		if rules.IsFull(game.Board) {
+		if game.Board.(b.Outcome).IsFull() {
 			fmt.Println("It's a draw.")
 			break
 		}

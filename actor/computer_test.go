@@ -20,7 +20,7 @@ var testCases = []struct {
 }{
 	{2, 2, b.Marks{2, 0, 2, 0, 1, 0, 1, 1, 0}, []int{1}, 2},
 	{2, 1, b.Marks{0, 0, 0, 2, 1, 0, 0, 0, 0}, []int{0, 1, 2, 6, 7, 8}, 1},
-	{2, 1, b.Marks{0, 0, 0, 1, 2, 0, 0, 0, 0}, []int{0, 2, 6, 8}, noWinner},
+	{2, 1, b.Marks{0, 0, 0, 1, 2, 0, 0, 0, 0}, []int{0, 1, 2, 6, 7, 8}, noWinner},
 	{2, 2, b.Marks{0, 0, 0, 1, 2, 0, 1, 0, 0}, []int{0}, noWinner},
 	{2, 1, b.Marks{2, 0, 0, 1, 2, 0, 1, 0, 0}, []int{8}, noWinner},
 	{2, 2, b.Marks{2, 0, 0, 1, 2, 0, 1, 0, 1}, []int{7}, noWinner},
@@ -37,7 +37,7 @@ func TestComputerGetMove(t *testing.T) {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
 			c := Computer{ID: tc.id, Players: tc.players}
 			s := int(math.Sqrt(float64(len(tc.marks))))
-			bo := b.Board{Marks: tc.marks, Size: s}
+			bo := b.Data{Marks: tc.marks, Size: s}
 			switch pos, err := c.GetMove(bo); false {
 			case err == nil:
 				t.Errorf("must never return an error")
@@ -55,7 +55,7 @@ func TestComputeOptimalMovePar(t *testing.T) {
 			s := int(math.Sqrt(float64(len(tc.marks))))
 			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
-			bo := b.Board{Marks: marks, Size: s}
+			bo := b.Data{Marks: marks, Size: s}
 			switch p := computeOptimalMovePar(bo, tc.id, tc.players); false {
 			case isIndexInList(p, tc.idxs):
 				t.Errorf("%v must be in %v", p, tc.idxs)
@@ -70,7 +70,7 @@ func TestComputeOptimalMoveSeq(t *testing.T) {
 			s := int(math.Sqrt(float64(len(tc.marks))))
 			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
-			bo := b.Board{Marks: marks, Size: s}
+			bo := b.Data{Marks: marks, Size: s}
 			p, w, hw := computeOptimalMoveSeq(bo, tc.id, tc.players)
 			switch false {
 			case isBoardUnchanged(tc.marks, bo.Marks):
@@ -122,7 +122,7 @@ var benchMarks = []b.Marks{
 
 func bench(bm *testing.B, i int, parallel bool) {
 	c := Computer{ID: b.Player((i+1)%2 + 1), Players: 2}
-	bo := b.Board{Marks: benchMarks[i-1], Size: 3}
+	bo := b.Data{Marks: benchMarks[i-1], Size: 3}
 
 	if parallel {
 		for n := 0; n < bm.N; n++ {
@@ -135,7 +135,7 @@ func bench(bm *testing.B, i int, parallel bool) {
 	}
 }
 
-func (c *Computer) getMoveSequential(bo b.Board) (b.Position, error) {
+func (c *Computer) getMoveSequential(bo b.Data) (b.Position, error) {
 	p, _, _ := computeOptimalMoveSeq(bo, c.ID, c.Players)
 	return b.NewPosition(p, bo.Size), nil
 }

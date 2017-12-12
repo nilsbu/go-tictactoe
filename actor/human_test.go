@@ -17,7 +17,7 @@ const (
 )
 
 func TestIsAcceptableMove(t *testing.T) {
-	b := m.Board{Marks: make(m.Marks, 9), Size: 3}
+	b := m.Data{Marks: make(m.Marks, 9), Size: 3}
 	b.Marks[3] = 1
 
 	testCases := []struct {

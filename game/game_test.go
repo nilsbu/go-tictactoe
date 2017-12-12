@@ -60,12 +60,12 @@ func TestNewGame(t *testing.T) {
 			case equalsActors(tc.players, game.Players):
 				t.Errorf("player setup: expected = %v, actual %v",
 					tc.players, game.Players)
-			case len(game.Board.Marks) == tc.size*tc.size:
+			case len(game.Board.(b.Data).Marks) == tc.size*tc.size:
 				t.Errorf("marks size: expected = %v, actual = %v",
-					tc.size*tc.size, len(game.Board.Marks))
-			case game.Board.Size == tc.size:
+					tc.size*tc.size, len(game.Board.(b.Data).Marks))
+			case game.Board.(b.Data).Size == tc.size:
 				t.Errorf("board size: expected = %v, actual = %v",
-					tc.size, game.Board.Size)
+					tc.size, game.Board.(b.Data).Size)
 			case game.CurrentPlayer.Next == 1:
 				t.Errorf("next player: expected = 1, actual = %v",
 					game.CurrentPlayer.Next)
@@ -131,9 +131,9 @@ func TestGame_Move2(t *testing.T) {
 			case test.Cond(tc.err == test.NoError, err == nil):
 				t.Errorf("no error expected but one was returned")
 			case tc.err == test.NoError:
-			case g.Board.Marks.Equal(tc.post):
+			case g.Board.(b.Data).Marks.Equal(tc.post):
 				t.Errorf("board different: expected = %v, actual = %v",
-					tc.post, g.Board.Marks)
+					tc.post, g.Board.(b.Data).Marks)
 			case g.CurrentPlayer.Next == tc.plyrPost:
 				t.Errorf("next player wrong: expected = %v, actual = %v",
 					tc.plyrPost, g.CurrentPlayer)

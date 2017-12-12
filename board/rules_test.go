@@ -1,30 +1,29 @@
-package rules
+package board
 
 import (
 	"fmt"
 	"testing"
 
-	b "go-tictactoe/board"
 	"go-tictactoe/test"
 )
 
 func TestIsFull(t *testing.T) {
 	testCases := []struct {
-		marks b.Marks
+		marks Marks
 		size  int
 		fin   bool
 	}{
-		{b.Marks{0, 0, 0, 0}, 2, false},
-		{b.Marks{2, 1, 2, 0}, 2, false},
-		{b.Marks{2, 1, 2, 3}, 2, true},
-		{b.Marks{2, 1, 2, 3, 1, 1, 2, 3, 2}, 3, true},
-		{b.Marks{0, 1, 2, 3, 1, 1, 2, 3, 2}, 3, false},
+		{Marks{0, 0, 0, 0}, 2, false},
+		{Marks{2, 1, 2, 0}, 2, false},
+		{Marks{2, 1, 2, 3}, 2, true},
+		{Marks{2, 1, 2, 3, 1, 1, 2, 3, 2}, 3, true},
+		{Marks{0, 1, 2, 3, 1, 1, 2, 3, 2}, 3, false},
 	}
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
-			bo := b.Board{Marks: tc.marks, Size: tc.size}
-			switch fin := IsFull(bo); false {
+			bo := Data{Marks: tc.marks, Size: tc.size}
+			switch fin := bo.IsFull(); false {
 			case tc.fin == fin:
 				t.Errorf("expected = %v, actual %v", tc.fin, fin)
 			}
@@ -33,31 +32,31 @@ func TestIsFull(t *testing.T) {
 }
 
 func TestGetWinner(t *testing.T) {
-	const noWinner b.Player = -1
+	const noWinner Player = -1
 
 	testCases := []struct {
-		marks  b.Marks
+		marks  Marks
 		size   int
-		winner b.Player
+		winner Player
 	}{
 		// No winner
-		{b.Marks{0, 0, 0, 0, 0, 0, 0, 0, 0}, 3, noWinner},
-		{b.Marks{2, 1, 2, 1, 1, 2, 1, 2, 1}, 3, noWinner},
+		{Marks{0, 0, 0, 0, 0, 0, 0, 0, 0}, 3, noWinner},
+		{Marks{2, 1, 2, 1, 1, 2, 1, 2, 1}, 3, noWinner},
 		// Winner in row
-		{b.Marks{1, 1, 1, 2, 2, 1, 1, 2, 2}, 3, 1},
-		{b.Marks{1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 2, 1, 1, 2}, 4, 2},
+		{Marks{1, 1, 1, 2, 2, 1, 1, 2, 2}, 3, 1},
+		{Marks{1, 1, 1, 2, 2, 2, 2, 2, 1, 2, 1, 1, 2, 1, 1, 2}, 4, 2},
 		// Winner in column
-		{b.Marks{1, 2, 3, 2, 1, 3, 1, 2, 3}, 3, 3},
-		{b.Marks{1, 2, 2, 1, 1, 2, 2, 1, 1}, 3, 1},
+		{Marks{1, 2, 3, 2, 1, 3, 1, 2, 3}, 3, 3},
+		{Marks{1, 2, 2, 1, 1, 2, 2, 1, 1}, 3, 1},
 		// Winner in diagonal
-		{b.Marks{1, 2, 2, 1, 1, 2, 2, 2, 1}, 3, 1},
-		{b.Marks{0, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0}, 4, 2},
+		{Marks{1, 2, 2, 1, 1, 2, 2, 2, 1}, 3, 1},
+		{Marks{0, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 2, 0, 0, 0}, 4, 2},
 	}
 
 	for i, tc := range testCases {
 		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
-			bo := b.Board{Marks: tc.marks, Size: tc.size}
-			switch winner, hasWinner := GetWinner(bo); false {
+			bo := Data{Marks: tc.marks, Size: tc.size}
+			switch winner, hasWinner := bo.GetWinner(); false {
 			case test.Cond(tc.winner == noWinner, !hasWinner):
 				t.Errorf("no winner expected but one was returned")
 			case test.Cond(tc.winner != noWinner, hasWinner):
