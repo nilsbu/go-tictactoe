@@ -8,6 +8,13 @@ import (
 	b "go-tictactoe/board"
 )
 
+// Flow provides the method Loop in which the main loop is contained.
+// It requests moves from all players after another and ends when an outcom has
+// been achieved.
+type Flow interface {
+	Loop()
+}
+
 // MinPlayers is the minimal number of players, human or not, that are needed
 // for a game.
 const MinPlayers = 2
@@ -26,13 +33,6 @@ type Game struct {
 
 // PlayerType differentiates between human and computer players.
 type PlayerType int
-
-// Human and Computer are PlayerTypes that donote human and computer players
-// respectively.
-const (
-	Human PlayerType = iota
-	Computer
-)
 
 // PlayerCounter is a counter that provides the ID of the next plauer.
 type PlayerCounter struct {
@@ -68,7 +68,7 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 
 	var i b.Player
 	for ; i < b.Player(humanPlayers); i++ {
-		playerArr[i] = a.Actor(&a.Human{ID: i + 1})
+		playerArr[i] = a.Actor(&a.Human{})
 	}
 	for ; i < b.Player(players); i++ {
 		playerArr[i] = a.Actor(&a.Computer{ID: i + 1, Players: b.Player(players)})
@@ -95,4 +95,33 @@ func (g *Game) Move(pos b.Position, player b.Player) error {
 	g.CurrentPlayer.Inc()
 
 	return nil
+}
+
+func (g *Game) Loop() {
+	for {
+		fmt.Printf("Your move, player %v:\n", g.CurrentPlayer.Next)
+		player := g.Players[g.CurrentPlayer.Next-1]
+		pos, err := player.GetMove(g.Board)
+		if err != nil {
+			break
+		}
+
+		err = g.Move(pos, g.CurrentPlayer.Next)
+		fmt.Println(g.Board)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if w, hw := g.Board.(b.Outcome).GetWinner(); hw {
+			fmt.Printf("Player %v won, congrats.\n", w)
+			fmt.Println("Congrats.")
+			break
+		}
+
+		if g.Board.(b.Outcome).IsFull() {
+			fmt.Println("It's a draw.")
+			break
+		}
+	}
 }

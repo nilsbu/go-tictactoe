@@ -13,15 +13,12 @@ import (
 
 // Human represents a human player.
 type Human struct {
-	ID b.Player
 }
 
 // GetMove returns the move the player makes after prompting them for input.
 func (h *Human) GetMove(bo b.Board) (b.Position, error) {
 	// TODO test, move scanner in struct
 	scanner := bufio.NewScanner(os.Stdin)
-
-	fmt.Printf("Your move, player %v:\n", h.ID)
 
 	for scanner.Scan() {
 		pos, msg, err := isAcceptableMove(bo, scanner.Text())
@@ -31,9 +28,7 @@ func (h *Human) GetMove(bo b.Board) (b.Position, error) {
 
 		fmt.Println(msg)
 	}
-	if err := scanner.Err(); err != nil {
-		return b.Position{0, 0}, err
-	}
+
 	return b.Position{0, 0}, errors.New("gathering input failed unexpectedly")
 }
 
@@ -61,10 +56,6 @@ func isAcceptableMove(bo b.Board, s string) (pos b.Position,
 		if err2 != nil {
 			return b.Position{0, 0}, "both parameters must be numbers", nil
 		}
-	}
-
-	if ok, reason := bo.IsWritable(pos); ok == false {
-		return b.Position{0, 0}, reason, nil
 	}
 
 	return pos, "", nil

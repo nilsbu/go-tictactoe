@@ -36,9 +36,6 @@ func TestIsAcceptableMove(t *testing.T) {
 		{"1,0", m.Position{1, 0}, ok},
 		{"1,01", m.Position{1, 1}, ok},
 		{"2, 1", m.Position{2, 1}, ok},
-		{"3,2", m.Position{0, 0}, fail}, // Out of bounds
-		{"0,1", m.Position{0, 0}, fail}, // Field not free
-		// No need to test bounds and written fields, see board tests
 	}
 
 	for i, tc := range testCases {

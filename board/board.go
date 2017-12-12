@@ -89,6 +89,7 @@ func (bo Data) Put(p Position, player Player) (ok bool, reason string) {
 // It has to be within the limits of the board and empty.
 // If the position is not writable a reason is given.
 func (bo Data) IsWritable(p Position) (ok bool, reason string) {
+	// TODO try to get rid of this function
 	if p[0] < 0 || p[0] >= bo.Size || p[1] < 0 || p[1] >= bo.Size {
 		return false, fmt.Sprintf("position out of range, board has size %vx%v",
 			bo.Size, bo.Size)

@@ -33,15 +33,15 @@ func TestNewGame(t *testing.T) {
 		players      []a.Actor
 		err          test.ErrorAnticipation
 	}{
-		{3, 2, []a.Actor{&a.Human{ID: 1}, &a.Human{ID: 2}}, test.NoError},
-		{4, 1, []a.Actor{&a.Human{ID: 1}, &a.Computer{ID: 2, Players: 2}},
+		{3, 2, []a.Actor{&a.Human{}, &a.Human{}}, test.NoError},
+		{4, 1, []a.Actor{&a.Human{}, &a.Computer{ID: 2, Players: 2}},
 			test.NoError},
 		{5, 0, []a.Actor{&a.Computer{ID: 1, Players: 3}, &a.Computer{ID: 2,
 			Players: 3}, &a.Computer{ID: 3, Players: 3}}, test.NoError},
-		{3, 1, []a.Actor{&a.Human{ID: 1}}, test.AnyError},
-		{2, 1, []a.Actor{&a.Human{ID: 1}, &a.Computer{ID: 2, Players: 2}},
+		{3, 1, []a.Actor{&a.Human{}}, test.AnyError},
+		{2, 1, []a.Actor{&a.Human{}, &a.Computer{ID: 2, Players: 2}},
 			test.AnyError},
-		{3, 3, []a.Actor{&a.Human{ID: 1}, &a.Human{ID: 2}}, test.AnyError},
+		{3, 3, []a.Actor{&a.Human{}, &a.Human{}}, test.AnyError},
 	}
 
 	for i, tc := range testCases {
@@ -85,9 +85,9 @@ func equalsActors(ps []a.Actor, os []a.Actor) bool {
 }
 
 func equals(p a.Actor, o a.Actor) bool {
-	if pv, aok := p.(*a.Human); aok {
-		if ov, bok := o.(*a.Human); bok {
-			return pv.ID == ov.ID
+	if _, aok := p.(*a.Human); aok {
+		if _, bok := o.(*a.Human); bok {
+			return true
 		}
 		return false
 	}
