@@ -6,6 +6,7 @@ import (
 
 	a "go-tictactoe/actor"
 	b "go-tictactoe/board"
+	"go-tictactoe/io"
 )
 
 // Flow provides the method Loop in which the main loop is contained.
@@ -29,6 +30,8 @@ type Game struct {
 	Board   b.Board
 
 	CurrentPlayer PlayerCounter
+
+	io io.IO
 }
 
 // PlayerType differentiates between human and computer players.
@@ -68,7 +71,7 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 
 	var i b.Player
 	for ; i < b.Player(humanPlayers); i++ {
-		playerArr[i] = a.Actor(&a.Human{})
+		playerArr[i] = a.Actor(a.NewHuman())
 	}
 	for ; i < b.Player(players); i++ {
 		playerArr[i] = a.Actor(&a.Computer{ID: i + 1, Players: b.Player(players)})
@@ -76,8 +79,9 @@ func NewGame(boardSize, players, humanPlayers int) (*Game, error) {
 
 	return &Game{
 		playerArr,
-		b.Data{Marks: make(b.Marks, boardSize*boardSize), Size: boardSize},
+		b.NewData(boardSize),
 		PlayerCounter{Next: 1, Total: b.Player(players)},
+		io.NewConsole(),
 	}, nil
 }
 
@@ -97,9 +101,10 @@ func (g *Game) Move(pos b.Position, player b.Player) error {
 	return nil
 }
 
+// Loop is the main loop.
 func (g *Game) Loop() {
 	for {
-		fmt.Printf("Your move, player %v:\n", g.CurrentPlayer.Next)
+		g.io.Outf("Your move, player %v:\n", g.CurrentPlayer.Next)
 		player := g.Players[g.CurrentPlayer.Next-1]
 		pos, err := player.GetMove(g.Board)
 		if err != nil {
@@ -107,20 +112,20 @@ func (g *Game) Loop() {
 		}
 
 		err = g.Move(pos, g.CurrentPlayer.Next)
-		fmt.Println(g.Board)
+		g.io.OutBoard(g.Board)
 		if err != nil {
-			fmt.Println(err)
+			g.io.Outln(err)
 			continue
 		}
 
 		if w, hw := g.Board.(b.Outcome).GetWinner(); hw {
-			fmt.Printf("Player %v won, congrats.\n", w)
-			fmt.Println("Congrats.")
+			g.io.Outf("Player %v won, congrats.\n", w)
+			g.io.Outln("Congrats.")
 			break
 		}
 
 		if g.Board.(b.Outcome).IsFull() {
-			fmt.Println("It's a draw.")
+			g.io.Outln("It's a draw.")
 			break
 		}
 	}

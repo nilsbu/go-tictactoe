@@ -1,16 +1,6 @@
 package board
 
-import (
-	"fmt"
-	"strings"
-)
-
-// Symbols stores the marks that players make on the board.
-// The first one is the mark of an empty board, the subsequent ones belong to
-// the players.
-var symbols = []string{" ", "x", "o", "8", "v", "^"}
-
-// FIXME symbols should not be limited without checks
+import "fmt"
 
 // Board provides access to the board that the game is played on.
 // Put makes marks at the requested position.
@@ -55,22 +45,12 @@ func (p Position) ToIndex(s int) int {
 	return p[1]*s + p[0]
 }
 
-func (bo Data) String() string {
-	// TODO move this to another place
-	s := strings.Repeat("-", 2*bo.Size+1) + "\n"
-
-	for y := 0; y < bo.Size; y++ {
-		s += "|"
-
-		for x := 0; x < bo.Size; x++ {
-			s += fmt.Sprintf("%v|", symbols[bo.Marks[y*bo.Size+x]])
-		}
-
-		s += "\n"
-		s += strings.Repeat("-", 2*bo.Size+1) + "\n"
+// NewData constructs Data with size s*s
+func NewData(size int) Data {
+	return Data{
+		make(Marks, size*size),
+		size,
 	}
-
-	return s
 }
 
 // Put makes a mark for a player on the board.

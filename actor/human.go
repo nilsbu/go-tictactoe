@@ -1,35 +1,40 @@
 package actor
 
 import (
-	"bufio"
 	"errors"
-	"fmt"
-	"os"
 	"strconv"
 	"strings"
 
 	b "go-tictactoe/board"
+	"go-tictactoe/io"
 )
 
 // Human represents a human player.
 type Human struct {
+	io io.IO
+}
+
+// NewHuman creates a human plauer with console as IO.
+func NewHuman() *Human {
+	return &Human{io: io.NewConsole()}
 }
 
 // GetMove returns the move the player makes after prompting them for input.
 func (h *Human) GetMove(bo b.Board) (b.Position, error) {
-	// TODO test, move scanner in struct
-	scanner := bufio.NewScanner(os.Stdin)
-
-	for scanner.Scan() {
-		pos, msg, err := isAcceptableMove(bo, scanner.Text())
-		if err != nil || msg == "" {
-			return pos, err
+	// TODO test
+	for {
+		s, err1 := h.io.In()
+		if err1 != nil {
+			return b.Position{0, 0}, err1
 		}
 
-		fmt.Println(msg)
-	}
+		pos, msg, err2 := isAcceptableMove(bo, s)
+		if err2 != nil || msg == "" {
+			return pos, err2
+		}
 
-	return b.Position{0, 0}, errors.New("gathering input failed unexpectedly")
+		h.io.Outln(msg)
+	}
 }
 
 // isAcceptableMove checks if an input string corresponds to an acceptable move.
