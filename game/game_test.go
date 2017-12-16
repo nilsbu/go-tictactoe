@@ -6,8 +6,16 @@ import (
 
 	a "go-tictactoe/actor"
 	b "go-tictactoe/board"
+	"go-tictactoe/io"
 	"go-tictactoe/test"
 )
+
+func TestSymbols(t *testing.T) {
+	switch false {
+	case MaxPlayers == len(io.Symbols)-1:
+		t.Errorf("Expected %v symbols, has %v", MaxPlayers, len(io.Symbols)-1)
+	}
+}
 
 func TestPlayerCounter_Inc(t *testing.T) {
 	for n := 2; n <= 4; n++ {

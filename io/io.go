@@ -27,9 +27,7 @@ type Console struct {
 // Symbols stores the marks that players make on the board.
 // The first one is the mark of an empty board, the subsequent ones belong to
 // the players.
-var symbols = []string{" ", "x", "o", "8", "v", "^"}
-
-// FIXME symbols should not be limited without checks
+var Symbols = []string{" ", "x", "o", "^", "#", "v"}
 
 // NewConsole is the constructor for Console.
 func NewConsole() Console {
@@ -69,7 +67,7 @@ func formatBoard(bo b.Board) string {
 		s += "|"
 
 		for x := 0; x < d.Size; x++ {
-			s += fmt.Sprintf("%v|", symbols[d.Marks[y*d.Size+x]])
+			s += fmt.Sprintf("%v|", Symbols[d.Marks[y*d.Size+x]])
 		}
 
 		s += "\n"

@@ -17,8 +17,12 @@ type Flow interface {
 }
 
 // MinPlayers is the minimal number of players, human or not, that are needed
-// for a game.
+// in a game.
 const MinPlayers = 2
+
+// MaxPlayers is the maximum number of players, human or not, that are allowed
+// in a game.
+const MaxPlayers = 5
 
 // MinBoardSize is the minimal board size required.
 // There are this many columns and rows required.
