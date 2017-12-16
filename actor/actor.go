@@ -1,6 +1,6 @@
 package actor
 
-import b "go-tictactoe/board"
+import b "tictactoe/board"
 
 // Actor is an interface that represents a player in a game.
 // It can be a human or computer.

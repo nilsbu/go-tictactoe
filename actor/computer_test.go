@@ -5,8 +5,8 @@ import (
 	"math"
 	"testing"
 
-	b "go-tictactoe/board"
-	"go-tictactoe/test"
+	b "tictactoe/board"
+	"tictactoe/test"
 )
 
 const noWinner b.Player = -1

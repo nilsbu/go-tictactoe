@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	g "go-tictactoe/game"
+	g "tictactoe/game"
 )
 
 func main() {

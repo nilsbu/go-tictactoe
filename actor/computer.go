@@ -1,7 +1,7 @@
 package actor
 
 import (
-	b "go-tictactoe/board"
+	b "tictactoe/board"
 )
 
 // Computer represents a computer player.

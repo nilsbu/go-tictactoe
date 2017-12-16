@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	m "go-tictactoe/board"
-	"go-tictactoe/test"
+	m "tictactoe/board"
+	"tictactoe/test"
 )
 
 type moveCode int

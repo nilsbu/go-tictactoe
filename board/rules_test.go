@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"go-tictactoe/test"
+	"tictactoe/test"
 )
 
 func TestIsFull(t *testing.T) {
