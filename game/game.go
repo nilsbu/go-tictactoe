@@ -122,14 +122,14 @@ func (g *Game) Loop() {
 			continue
 		}
 
-		if w, hw := g.Board.(b.Outcome).GetWinner(); hw {
-			g.io.Outf("Player %v won, congrats.\n", w)
-			g.io.Outln("Congrats.")
-			break
-		}
+		finished, draw, winner := g.Board.(b.Outcome).IsFinished()
+		if finished {
+			if draw {
+				g.io.Outln("It's a draw.")
+			} else {
+				g.io.Outf("Player %v won, congrats.\nCongrats.", winner)
+			}
 
-		if g.Board.(b.Outcome).IsFull() {
-			g.io.Outln("It's a draw.")
 			break
 		}
 	}

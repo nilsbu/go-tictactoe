@@ -5,101 +5,59 @@ package board
 // GetWinner returns the winner if someone has won the game.
 // IsFull tells if the board is full.
 type Outcome interface {
-	// TODO unify to Get()
-	GetWinner() (id Player, hasWinner bool)
-	IsFull() bool
+	IsFinished() (finished bool, draw bool, winner Player)
 }
 
-// IsFull checks if a board is full.
-func (bo Data) IsFull() bool {
-	for _, v := range bo.Marks {
-		if v == Player(0) {
-			return false
-		}
-	}
-
-	return true
+type xyAccessor struct {
+	major  int
+	minor  int
+	access func(int, int) int
 }
 
-// GetWinner determines if there a player has won the game.
-// NoWinner is returned if this is not the case, otherwise the player's ID is
-// returned.
-func (bo Data) GetWinner() (id Player, hasWinner bool) {
-	id, hasWinner = getRowWinner(bo)
-	if hasWinner {
-		return
+func (bo Data) IsFinished() (finished bool, draw bool, winner Player) {
+	finished = true
+
+	ds := []xyAccessor{
+		// Rows
+		{bo.Size, bo.Size, func(maj, min int) int { return maj*bo.Size + min }},
+		//Columns
+		{bo.Size, bo.Size, func(maj, min int) int { return min*bo.Size + maj }},
+		// Main diagonal
+		{1, bo.Size, func(maj, min int) int { return min * (bo.Size + 1) }},
+		// Antidiagonal
+		{1, bo.Size, func(maj, min int) int { return (min+1)*bo.Size - min - 1 }},
 	}
 
-	id, hasWinner = getColumnWinner(bo)
-	if hasWinner {
-		return
+	for _, d := range ds {
+		for maj := 0; maj < d.major; maj++ {
+			blocked, hasWinner, id := isMinorFinished(bo, d, maj)
+			if hasWinner {
+				return true, false, id
+			}
+			finished = finished && blocked
+		}
 	}
 
-	return getDiagonalWinner(bo)
+	return finished, finished, 0
 }
 
-func getRowWinner(bo Data) (id Player, hasWinner bool) {
-	for y := 0; y < bo.Size; y++ {
-		if bo.Marks[y*bo.Size] == 0 {
-			continue
+func isMinorFinished(bo Data, d xyAccessor, maj int) (blocked bool, hasWinner bool,
+	id Player) {
+	hasWinner = true
+
+	for min := 0; min < d.minor; min++ {
+		c := bo.Marks[d.access(maj, min)]
+
+		if id == 0 {
+			id = c
+		} else if c != id && c != 0 {
+			return true, false, 0
 		}
 
-		x := 1
-		for ; x < bo.Size; x++ {
-			if bo.Marks[y*bo.Size+x] != bo.Marks[y*bo.Size] {
-				break
-			}
-		}
-		if x == bo.Size {
-			return bo.Marks[y*bo.Size], true
-		}
-	}
-
-	return 0, false
-}
-
-func getColumnWinner(bo Data) (id Player, hasWinner bool) {
-	for x := 0; x < bo.Size; x++ {
-		if bo.Marks[x] == 0 {
-			continue
-		}
-
-		y := 1
-		for ; y < bo.Size; y++ {
-			if bo.Marks[y*bo.Size+x] != bo.Marks[x] {
-				break
-			}
-		}
-		if y == bo.Size {
-			return bo.Marks[x], true
+		if c != id || c == 0 {
+			hasWinner = false
 		}
 	}
 
-	return 0, false
-}
-
-func getDiagonalWinner(bo Data) (id Player, hasWinner bool) {
-	if bo.Marks[0] != 0 {
-		for xy := 1; xy < bo.Size; xy++ {
-			if bo.Marks[xy*bo.Size+xy] != bo.Marks[0] {
-				break
-			}
-			if xy == bo.Size-1 {
-				return bo.Marks[0], true
-			}
-		}
-	}
-
-	if bo.Marks[bo.Size-1] != 0 {
-		for xy := 1; xy < bo.Size; xy++ {
-			if bo.Marks[xy*bo.Size-xy+bo.Size-1] != bo.Marks[bo.Size-1] {
-				break
-			}
-			if xy == bo.Size-1 {
-				return bo.Marks[bo.Size-1], true
-			}
-		}
-	}
-
-	return 0, false
+	return
 }

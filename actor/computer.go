@@ -4,6 +4,8 @@ import (
 	b "tictactoe/board"
 )
 
+const maxDepth = 5
+
 // Computer represents a computer player.
 // It implements a function to make a move.
 type Computer struct {
@@ -19,7 +21,8 @@ func (c *Computer) GetMove(bo b.Board) (b.Position, error) {
 }
 
 // computeOptimalMoveSeq finds the optimal move for the player.
-func computeOptimalMoveSeq(bo b.Data, current b.Player, numPlayers b.Player) (
+func computeOptimalMoveSeq(bo b.Data, current b.Player, numPlayers b.Player,
+	rec int) (
 	pos int, winner b.Player, hasWinner bool) {
 
 	winner = 0
@@ -29,7 +32,7 @@ func computeOptimalMoveSeq(bo b.Data, current b.Player, numPlayers b.Player) (
 			continue
 		}
 
-		tmpWinner, tmpHas := attempt(bo, p, current, numPlayers)
+		tmpWinner, tmpHas := attempt(bo, p, current, numPlayers, rec)
 
 		switch {
 		case tmpWinner == current:
@@ -47,22 +50,23 @@ func computeOptimalMoveSeq(bo b.Data, current b.Player, numPlayers b.Player) (
 	return
 }
 
-func attempt(bo b.Data, p int, current b.Player, numPlayers b.Player) (
+func attempt(bo b.Data, p int, current b.Player, numPlayers b.Player, rec int) (
 	winner b.Player, hasWinner bool) {
 
 	defer func() { bo.Marks[p] = 0 }()
 	bo.Marks[p] = current
 
-	if winner, hasWinner = bo.GetWinner(); hasWinner {
-		return winner, hasWinner
-	}
-
-	if bo.IsFull() {
+	finished, draw, winner := bo.IsFinished()
+	if finished {
+		return winner, !draw
+	} else if rec == 0 {
+		// Don't continue here, report draw
 		return b.Player(0), false
 	}
 
 	nextPlayer := b.Player((current % numPlayers) + 1)
-	_, winner, hasWinner = computeOptimalMoveSeq(bo, nextPlayer, numPlayers)
+	_, winner, hasWinner = computeOptimalMoveSeq(bo, nextPlayer, numPlayers,
+		rec-1)
 
 	return
 }
@@ -95,7 +99,7 @@ func computeOptimalMovePar(bo b.Data, current b.Player, numPlayers b.Player) (
 			mcop := make(b.Marks, len(bo.Marks))
 			copy(mcop, bo.Marks)
 			bcop := b.Data{Marks: mcop, Size: bo.Size}
-			tmpWinner, tmpHas := attempt(bcop, i, cur, numP)
+			tmpWinner, tmpHas := attempt(bcop, i, cur, numP, maxDepth)
 
 			switch {
 			case tmpWinner == current:

@@ -71,7 +71,7 @@ func TestComputeOptimalMoveSeq(t *testing.T) {
 			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
 			bo := b.Data{Marks: marks, Size: s}
-			p, w, hw := computeOptimalMoveSeq(bo, tc.id, tc.players)
+			p, w, hw := computeOptimalMoveSeq(bo, tc.id, tc.players, maxDepth)
 			switch false {
 			case isBoardUnchanged(tc.marks, bo.Marks):
 				t.Errorf("board changed")
@@ -136,7 +136,7 @@ func bench(bm *testing.B, i int, parallel bool) {
 }
 
 func (c *Computer) getMoveSequential(bo b.Data) (b.Position, error) {
-	p, _, _ := computeOptimalMoveSeq(bo, c.ID, c.Players)
+	p, _, _ := computeOptimalMoveSeq(bo, c.ID, c.Players, maxDepth)
 	return b.NewPosition(p, bo.Size), nil
 }
 
