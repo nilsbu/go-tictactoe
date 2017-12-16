@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
-	a "tictactoe/actor"
-	b "tictactoe/board"
-	"tictactoe/io"
-	"tictactoe/test"
+	a "github.com/nilsbu/go-tictactoe/actor"
+	b "github.com/nilsbu/go-tictactoe/board"
+	"github.com/nilsbu/go-tictactoe/io"
+	"github.com/nilsbu/go-tictactoe/test"
 )
 
 func TestSymbols(t *testing.T) {

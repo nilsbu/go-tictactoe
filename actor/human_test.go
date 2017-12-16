@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	m "tictactoe/board"
-	"tictactoe/test"
+	m "github.com/nilsbu/go-tictactoe/board"
+	"github.com/nilsbu/go-tictactoe/test"
 )
 
 type moveCode int

@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	b "tictactoe/board"
-	"tictactoe/io"
+	b "github.com/nilsbu/go-tictactoe/board"
+	"github.com/nilsbu/go-tictactoe/io"
 )
 
 // Human represents a human player.

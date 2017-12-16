@@ -2,8 +2,8 @@ package board
 
 // Outcome is an interface that figures out the outcome of the game based on the
 // game's rules.
-// GetWinner returns the winner if someone has won the game.
-// IsFull tells if the board is full.
+// IsFinished tells whether the game is finished and if yes, whether it is a
+// draw or which player won.
 type Outcome interface {
 	IsFinished() (finished bool, draw bool, winner Player)
 }
@@ -14,6 +14,10 @@ type xyAccessor struct {
 	access func(int, int) int
 }
 
+// IsFinished returns if the game is finished.
+// A game is finished, if there is no room on the board for a player to win.
+// If it is finished, the winner is returned.
+// If none exists, draw is true.
 func (bo Data) IsFinished() (finished bool, draw bool, winner Player) {
 	finished = true
 

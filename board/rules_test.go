@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"tictactoe/test"
+	"github.com/nilsbu/go-tictactoe/test"
 )
 
 func TestDataIsFinished(t *testing.T) {

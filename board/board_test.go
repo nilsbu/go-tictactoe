@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"tictactoe/test"
+	"github.com/nilsbu/go-tictactoe/test"
 )
 
 func TestNewPosition(t *testing.T) {

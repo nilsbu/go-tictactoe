@@ -5,8 +5,8 @@ import (
 	"math"
 	"testing"
 
-	b "tictactoe/board"
-	"tictactoe/test"
+	b "github.com/nilsbu/go-tictactoe/board"
+	"github.com/nilsbu/go-tictactoe/test"
 )
 
 const noWinner b.Player = -1

@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
-	a "tictactoe/actor"
-	b "tictactoe/board"
-	"tictactoe/io"
+	a "github.com/nilsbu/go-tictactoe/actor"
+	b "github.com/nilsbu/go-tictactoe/board"
+	"github.com/nilsbu/go-tictactoe/io"
 )
 
 // Flow provides the method Loop in which the main loop is contained.
