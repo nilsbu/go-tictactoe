@@ -4,7 +4,7 @@ import (
 	b "tictactoe/board"
 )
 
-const maxDepth = 5
+const maxDepth = 6
 
 // Computer represents a computer player.
 // It implements a function to make a move.
