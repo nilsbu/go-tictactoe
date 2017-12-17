@@ -5,8 +5,6 @@ import (
 	"testing"
 
 	"github.com/nilsbu/fastest"
-
-	"github.com/nilsbu/go-tictactoe/test"
 )
 
 func TestNewPosition(t *testing.T) {
@@ -37,12 +35,12 @@ func TestBoard_Put(t *testing.T) {
 	tables := []struct {
 		pos  Position
 		post Marks
-		err  test.ErrorAnticipation
+		err  bool
 	}{
-		{[2]int{0, 0}, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
-		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
-		{[2]int{4, 2}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.AnyError},
-		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.AnyError},
+		{[2]int{0, 0}, []Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, false},
+		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, false},
+		{[2]int{4, 2}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, true},
+		{[2]int{1, 1}, []Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, true},
 	}
 
 	var b = Data{make(Marks, 3*3), 3}
@@ -51,11 +49,11 @@ func TestBoard_Put(t *testing.T) {
 	for i, table := range tables {
 		ok, _ := b.Put(table.pos, currentPlayer)
 
-		ft.Implies(table.err == test.AnyError, !ok, "error expected in step %v but none was returned", i+1)
-		ft.Implies(table.err == test.NoError, ok, "no error expected in step %v but one was returned", i+1)
+		ft.Implies(table.err == true, !ok, "error expected in step %v but none was returned", i+1)
+		ft.Implies(table.err == false, ok, "no error expected in step %v but one was returned", i+1)
 		ft.True(b.Marks.Equal(table.post), "board different in step %v:\nexpected:\n%v\n\nactual:\n%v", i+1, table.post, b)
 
-		if table.err == test.NoError {
+		if table.err == false {
 			currentPlayer = currentPlayer%2 + 1
 		}
 	}

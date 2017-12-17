@@ -9,7 +9,6 @@ import (
 	a "github.com/nilsbu/go-tictactoe/actor"
 	b "github.com/nilsbu/go-tictactoe/board"
 	"github.com/nilsbu/go-tictactoe/io"
-	"github.com/nilsbu/go-tictactoe/test"
 )
 
 func TestSymbols(t *testing.T) {
@@ -26,9 +25,8 @@ func TestPlayerCounter_Inc(t *testing.T) {
 
 		ft.Seq(fmt.Sprintf("n=%v", n), func(ft fastest.T) {
 			for i := 0; i <= 2*n; i++ {
-				ft.Equals(pc.Next, b.Player(i%n+1),
-					"after %v increases, counter should be %v but was %v",
-					i, i%n+1, pc.Next)
+				ft.Equals(pc.Next, b.Player(i%n+1), "after %v increases, counter should be %v but was %v", i, i%n+1, pc.Next)
+
 				pc.Inc()
 			}
 		})
@@ -42,17 +40,15 @@ func TestNewGame(t *testing.T) {
 		size         int
 		humanPlayers int
 		players      []a.Actor
-		err          test.ErrorAnticipation
+		err          bool
 	}{
-		{3, 2, []a.Actor{&a.Human{}, &a.Human{}}, test.NoError},
-		{4, 1, []a.Actor{&a.Human{}, &a.Computer{ID: 2, Players: 2}},
-			test.NoError},
+		{3, 2, []a.Actor{&a.Human{}, &a.Human{}}, false},
+		{4, 1, []a.Actor{&a.Human{}, &a.Computer{ID: 2, Players: 2}}, false},
 		{5, 0, []a.Actor{&a.Computer{ID: 1, Players: 3}, &a.Computer{ID: 2,
-			Players: 3}, &a.Computer{ID: 3, Players: 3}}, test.NoError},
-		{3, 1, []a.Actor{&a.Human{}}, test.AnyError},
-		{2, 1, []a.Actor{&a.Human{}, &a.Computer{ID: 2, Players: 2}},
-			test.AnyError},
-		{3, 3, []a.Actor{&a.Human{}, &a.Human{}}, test.AnyError},
+			Players: 3}, &a.Computer{ID: 3, Players: 3}}, false},
+		{3, 1, []a.Actor{&a.Human{}}, true},
+		{2, 1, []a.Actor{&a.Human{}, &a.Computer{ID: 2, Players: 2}}, true},
+		{3, 3, []a.Actor{&a.Human{}, &a.Human{}}, true},
 	}
 
 	for i, tc := range testCases {
@@ -60,14 +56,11 @@ func TestNewGame(t *testing.T) {
 		ft.Seq(s, func(ft fastest.T) {
 			game, err := NewGame(tc.size, len(tc.players), tc.humanPlayers)
 
-			ft.Implies(tc.err == test.AnyError, err != nil,
-				"expected error but none was returned")
-			ft.Implies(tc.err == test.NoError, err == nil,
-				"no error expected but one was returned")
-			ft.Only(tc.err == test.NoError)
+			ft.Implies(tc.err == true, err != nil, "expected error but none was returned")
+			ft.Implies(tc.err == false, err == nil, "no error expected but one was returned")
+			ft.Only(tc.err == false)
 			ft.Equals(len(game.Players), len(tc.players))
-			ft.True(equalsActors(tc.players, game.Players),
-				"player setup: expected = %v, actual %v", tc.players, game.Players)
+			ft.True(equalsActors(tc.players, game.Players), "player setup: expected = %v, actual %v", tc.players, game.Players)
 			ft.Equals(len(game.Board.(b.Data).Marks), tc.size*tc.size)
 			ft.Equals(game.Board.(b.Data).Size, tc.size)
 			ft.Equals(b.Player(1), game.CurrentPlayer.Next)
@@ -110,13 +103,13 @@ func TestGame_Move2(t *testing.T) {
 		plyrPre  b.Player
 		plyrPost b.Player
 		post     b.Marks
-		err      test.ErrorAnticipation
+		err      bool
 	}{
-		{[2]int{0, 0}, 1, 2, []b.Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, test.NoError},
-		{[2]int{1, 1}, 2, 1, []b.Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, test.NoError},
-		{[2]int{2, 2}, 2, 1, nil, test.AnyError}, // False NextPlayer
-		{[2]int{1, 1}, 1, 1, nil, test.AnyError}, // Field not empty
-		{[2]int{4, 1}, 1, 1, nil, test.AnyError}, // Outside board
+		{[2]int{0, 0}, 1, 2, []b.Player{1, 0, 0, 0, 0, 0, 0, 0, 0}, false},
+		{[2]int{1, 1}, 2, 1, []b.Player{1, 0, 0, 0, 2, 0, 0, 0, 0}, false},
+		{[2]int{2, 2}, 2, 1, nil, true}, // False NextPlayer
+		{[2]int{1, 1}, 1, 1, nil, true}, // Field not empty
+		{[2]int{4, 1}, 1, 1, nil, true}, // Outside board
 	}
 
 	g, err := NewGame(3, 2, 0)
@@ -127,14 +120,10 @@ func TestGame_Move2(t *testing.T) {
 		ft.Seq(s, func(ft fastest.T) {
 			err := g.Move(tc.pos, tc.plyrPre)
 
-			ft.Implies(tc.err == test.AnyError, err != nil,
-				"expected error but none was returned")
-			ft.Implies(tc.err == test.NoError, err == nil,
-				"no error expected but one was returned")
-			ft.Only(tc.err == test.NoError)
-			ft.True(g.Board.(b.Data).Marks.Equal(tc.post),
-				"board different: expected = %v, actual = %v",
-				tc.post, g.Board.(b.Data).Marks)
+			ft.Implies(tc.err == true, err != nil, "expected error but none was returned")
+			ft.Implies(tc.err == false, err == nil, "no error expected but one was returned")
+			ft.Only(tc.err == false)
+			ft.True(g.Board.(b.Data).Marks.Equal(tc.post), "board different: expected = %v, actual = %v", tc.post, g.Board.(b.Data).Marks)
 			ft.Equals(g.CurrentPlayer.Next, tc.plyrPost)
 		})
 	}
