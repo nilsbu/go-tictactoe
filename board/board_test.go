@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/nilsbu/fastest"
+
 	"github.com/nilsbu/go-tictactoe/test"
 )
 
 func TestNewPosition(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	testCases := []struct {
 		i int
 		s int
@@ -20,15 +24,16 @@ func TestNewPosition(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("#%v: %v", i, tc.p), func(t *testing.T) {
-			if p := NewPosition(tc.i, tc.s); tc.p != p {
-				t.Errorf("expected = %v, actual = %v", tc.p, p)
-			}
+		ft.Seq(fmt.Sprintf("#%v: %v", i, tc.p), func(ft fastest.T) {
+			p := NewPosition(tc.i, tc.s)
+			ft.Equals(tc.p, p)
 		})
 	}
 }
 
 func TestBoard_Put(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	tables := []struct {
 		pos  Position
 		post Marks
@@ -43,17 +48,12 @@ func TestBoard_Put(t *testing.T) {
 	var b = Data{make(Marks, 3*3), 3}
 	var currentPlayer Player = 1
 
-	// TODO refactor to t.Run...
 	for i, table := range tables {
-		switch ok, _ := b.Put(table.pos, currentPlayer); false {
-		case test.Cond(table.err == test.AnyError, !ok):
-			t.Errorf("error expected in step %v but none was returned", i+1)
-		case test.Cond(table.err == test.NoError, ok):
-			t.Errorf("no error expected in step %v but one was returned", i+1)
-		case b.Marks.Equal(table.post):
-			t.Errorf("board different in step %v:\nexpected:\n%v\n\nactual:\n%v",
-				i+1, table.post, b)
-		}
+		ok, _ := b.Put(table.pos, currentPlayer)
+
+		ft.Implies(table.err == test.AnyError, !ok, "error expected in step %v but none was returned", i+1)
+		ft.Implies(table.err == test.NoError, ok, "no error expected in step %v but one was returned", i+1)
+		ft.True(b.Marks.Equal(table.post), "board different in step %v:\nexpected:\n%v\n\nactual:\n%v", i+1, table.post, b)
 
 		if table.err == test.NoError {
 			currentPlayer = currentPlayer%2 + 1

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/nilsbu/fastest"
+
 	a "github.com/nilsbu/go-tictactoe/actor"
 	b "github.com/nilsbu/go-tictactoe/board"
 	"github.com/nilsbu/go-tictactoe/io"
@@ -11,23 +13,22 @@ import (
 )
 
 func TestSymbols(t *testing.T) {
-	switch false {
-	case MaxPlayers == len(io.Symbols)-1:
-		t.Errorf("Expected %v symbols, has %v", MaxPlayers, len(io.Symbols)-1)
-	}
+	ft := fastest.T{T: t}
+
+	ft.Equals(MaxPlayers, len(io.Symbols)-1)
 }
 
 func TestPlayerCounter_Inc(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	for n := 2; n <= 4; n++ {
 		pc := PlayerCounter{Next: 1, Total: b.Player(n)}
 
-		t.Run(fmt.Sprintf("n=%v", n), func(t *testing.T) {
+		ft.Seq(fmt.Sprintf("n=%v", n), func(ft fastest.T) {
 			for i := 0; i <= 2*n; i++ {
-				if pc.Next != b.Player(i%n+1) {
-					t.Errorf("after %v increases, counter should be %v but was %v",
-						i, i%n+1, pc.Next)
-					break
-				}
+				ft.Equals(pc.Next, b.Player(i%n+1),
+					"after %v increases, counter should be %v but was %v",
+					i, i%n+1, pc.Next)
 				pc.Inc()
 			}
 		})
@@ -35,6 +36,8 @@ func TestPlayerCounter_Inc(t *testing.T) {
 }
 
 func TestNewGame(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	testCases := []struct {
 		size         int
 		humanPlayers int
@@ -54,30 +57,20 @@ func TestNewGame(t *testing.T) {
 
 	for i, tc := range testCases {
 		s := fmt.Sprintf("#%v: %vx%v with %v", i, tc.size, tc.size, tc.players)
-		t.Run(s, func(t *testing.T) {
-			switch game, err :=
-				NewGame(tc.size, len(tc.players), tc.humanPlayers); false {
-			case test.Cond(tc.err == test.AnyError, err != nil):
-				t.Errorf("expected error but none was returned")
-			case test.Cond(tc.err == test.NoError, err == nil):
-				t.Errorf("no error expected but one was returned")
-			case tc.err == test.NoError:
-			case len(game.Players) == len(tc.players):
-				t.Errorf("number of players: expected = %v, actual = %v",
-					len(tc.players), len(game.Players))
-			case equalsActors(tc.players, game.Players):
-				t.Errorf("player setup: expected = %v, actual %v",
-					tc.players, game.Players)
-			case len(game.Board.(b.Data).Marks) == tc.size*tc.size:
-				t.Errorf("marks size: expected = %v, actual = %v",
-					tc.size*tc.size, len(game.Board.(b.Data).Marks))
-			case game.Board.(b.Data).Size == tc.size:
-				t.Errorf("board size: expected = %v, actual = %v",
-					tc.size, game.Board.(b.Data).Size)
-			case game.CurrentPlayer.Next == 1:
-				t.Errorf("next player: expected = 1, actual = %v",
-					game.CurrentPlayer.Next)
-			}
+		ft.Seq(s, func(ft fastest.T) {
+			game, err := NewGame(tc.size, len(tc.players), tc.humanPlayers)
+
+			ft.Implies(tc.err == test.AnyError, err != nil,
+				"expected error but none was returned")
+			ft.Implies(tc.err == test.NoError, err == nil,
+				"no error expected but one was returned")
+			ft.Only(tc.err == test.NoError)
+			ft.Equals(len(game.Players), len(tc.players))
+			ft.True(equalsActors(tc.players, game.Players),
+				"player setup: expected = %v, actual %v", tc.players, game.Players)
+			ft.Equals(len(game.Board.(b.Data).Marks), tc.size*tc.size)
+			ft.Equals(game.Board.(b.Data).Size, tc.size)
+			ft.Equals(b.Player(1), game.CurrentPlayer.Next)
 		})
 	}
 }
@@ -110,6 +103,8 @@ func equals(p a.Actor, o a.Actor) bool {
 
 // TODO Test NextPlayer for more than two players
 func TestGame_Move2(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	testCases := []struct {
 		pos      b.Position
 		plyrPre  b.Player
@@ -125,27 +120,22 @@ func TestGame_Move2(t *testing.T) {
 	}
 
 	g, err := NewGame(3, 2, 0)
-	if err != nil {
-		t.Errorf("game creation failed: %v", err)
-		return
-	}
+	ft.Nil(err, "game creation failed: %v", err)
 
 	for i, tc := range testCases {
 		s := fmt.Sprintf("#%v: %v at %v", i, tc.plyrPre, tc.pos)
-		t.Run(s, func(t *testing.T) {
-			switch err := g.Move(tc.pos, tc.plyrPre); false {
-			case test.Cond(tc.err == test.AnyError, err != nil):
-				t.Errorf("expected error but none was returned")
-			case test.Cond(tc.err == test.NoError, err == nil):
-				t.Errorf("no error expected but one was returned")
-			case tc.err == test.NoError:
-			case g.Board.(b.Data).Marks.Equal(tc.post):
-				t.Errorf("board different: expected = %v, actual = %v",
-					tc.post, g.Board.(b.Data).Marks)
-			case g.CurrentPlayer.Next == tc.plyrPost:
-				t.Errorf("next player wrong: expected = %v, actual = %v",
-					tc.plyrPost, g.CurrentPlayer)
-			}
+		ft.Seq(s, func(ft fastest.T) {
+			err := g.Move(tc.pos, tc.plyrPre)
+
+			ft.Implies(tc.err == test.AnyError, err != nil,
+				"expected error but none was returned")
+			ft.Implies(tc.err == test.NoError, err == nil,
+				"no error expected but one was returned")
+			ft.Only(tc.err == test.NoError)
+			ft.True(g.Board.(b.Data).Marks.Equal(tc.post),
+				"board different: expected = %v, actual = %v",
+				tc.post, g.Board.(b.Data).Marks)
+			ft.Equals(g.CurrentPlayer.Next, tc.plyrPost)
 		})
 	}
 }

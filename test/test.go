@@ -11,9 +11,3 @@ const (
 	AnyError ErrorAnticipation = iota
 	NoError
 )
-
-// Cond is the the material conditional.
-// 		Cond(a, b) == !a || b
-func Cond(a, b bool) bool {
-	return !a || b
-}

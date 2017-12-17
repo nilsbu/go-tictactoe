@@ -5,8 +5,9 @@ import (
 	"math"
 	"testing"
 
+	"github.com/nilsbu/fastest"
+
 	b "github.com/nilsbu/go-tictactoe/board"
-	"github.com/nilsbu/go-tictactoe/test"
 )
 
 const noWinner b.Player = -1
@@ -33,59 +34,54 @@ var testCases = []struct {
 }
 
 func TestComputerGetMove(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
+		ft.Seq(fmt.Sprintf("#%v: %v", i, tc.marks), func(ft fastest.T) {
 			c := Computer{ID: tc.id, Players: tc.players}
 			s := int(math.Sqrt(float64(len(tc.marks))))
 			bo := b.Data{Marks: tc.marks, Size: s}
-			switch pos, err := c.GetMove(bo); false {
-			case err == nil:
-				t.Errorf("must never return an error")
-			case isIndexInList(pos.ToIndex(s), tc.idxs):
-				t.Errorf("%v (= %v) must be in %v", pos, pos.ToIndex(s),
-					tc.idxs)
-			}
+			pos, err := c.GetMove(bo)
+
+			ft.Nil(err, "must never return an error")
+			ft.True(isIndexInList(pos.ToIndex(s), tc.idxs), "%v (= %v) must be in %v", pos, pos.ToIndex(s), tc.idxs)
 		})
 	}
 }
 
 func TestComputeOptimalMovePar(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
+		ft.Seq(fmt.Sprintf("#%v: %v", i, tc.marks), func(ft fastest.T) {
 			s := int(math.Sqrt(float64(len(tc.marks))))
 			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
 			bo := b.Data{Marks: marks, Size: s}
-			switch p := computeOptimalMovePar(bo, tc.id, tc.players); false {
-			case isIndexInList(p, tc.idxs):
-				t.Errorf("%v must be in %v", p, tc.idxs)
-			}
+
+			p := computeOptimalMovePar(bo, tc.id, tc.players)
+			ft.True(isIndexInList(p, tc.idxs), "%v must be in %v", p, tc.idxs)
 		})
 	}
 }
 
 func TestComputeOptimalMoveSeq(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("#%v: %v", i, tc.marks), func(t *testing.T) {
+		ft.Seq(fmt.Sprintf("#%v: %v", i, tc.marks), func(ft fastest.T) {
 			s := int(math.Sqrt(float64(len(tc.marks))))
 			marks := make(b.Marks, len(tc.marks))
 			copy(marks, tc.marks)
 			bo := b.Data{Marks: marks, Size: s}
 			p, w, hw := computeOptimalMoveSeq(bo, tc.id, tc.players, maxDepth)
-			switch false {
-			case isBoardUnchanged(tc.marks, bo.Marks):
-				t.Errorf("board changed")
-			case test.Cond(!hw, w == 0):
-				t.Errorf("hasWinner = false but winner = %v, must be 0", w)
-			case test.Cond(tc.winner != noWinner, hw):
-				t.Errorf("winner was expected but none was returned")
-			case test.Cond(tc.winner == noWinner, !hw):
-				t.Errorf("no winner was expected but %v was returned", w)
-			case test.Cond(tc.winner != noWinner, tc.winner == w):
-				t.Errorf("expected = %v, actual = %v", tc.winner, w)
-			case isIndexInList(p, tc.idxs):
-				t.Errorf("%v must be in %v", p, tc.idxs)
-			}
+
+			ft.True(isBoardUnchanged(tc.marks, bo.Marks), "board changed")
+			ft.Implies(!hw, w == 0, "hasWinner = false but winner = %v, must be 0", w)
+			ft.Implies(tc.winner != noWinner, hw, "winner was expected but none was returned")
+			ft.Implies(tc.winner == noWinner, !hw, "no winner was expected but %v was returned", w)
+			ft.Implies(tc.winner != noWinner, tc.winner == w, "expected = %v, actual = %v", tc.winner, w)
+			ft.True(isIndexInList(p, tc.idxs), "%v must be in %v", p, tc.idxs)
 		})
 	}
 }

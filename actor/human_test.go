@@ -4,8 +4,9 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/nilsbu/fastest"
+
 	m "github.com/nilsbu/go-tictactoe/board"
-	"github.com/nilsbu/go-tictactoe/test"
 )
 
 type moveCode int
@@ -17,6 +18,8 @@ const (
 )
 
 func TestIsAcceptableMove(t *testing.T) {
+	ft := fastest.T{T: t}
+
 	b := m.Data{Marks: make(m.Marks, 9), Size: 3}
 	b.Marks[3] = 1
 
@@ -39,23 +42,18 @@ func TestIsAcceptableMove(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		t.Run(fmt.Sprintf("#%v: \"%v\"", i, tc.s), func(t *testing.T) {
-			switch pos, msg, err := isAcceptableMove(b, tc.s); false {
-			case test.Cond(tc.status == quit, err != nil):
-				t.Errorf("error expected but not returned")
-			case test.Cond(tc.status == quit, msg == ""):
-				t.Errorf("message has to be \"\" since quit is requested")
-			case tc.status != quit:
-			case err == nil:
-				t.Errorf("no error expected but was returned")
-			case test.Cond(tc.status == fail, msg != ""):
-				t.Errorf("expected failure but passed")
-			case tc.status == ok:
-			case msg == "":
-				t.Errorf("no message should have been returned")
-			case tc.pos == pos:
-				t.Errorf("false position, expected = %v, actual = %v", tc.pos, pos)
-			}
+
+		ft.Seq(fmt.Sprintf("#%v: \"%v\"", i, tc.s), func(ft fastest.T) {
+			pos, msg, err := isAcceptableMove(b, tc.s)
+
+			ft.Implies(tc.status == quit, err != nil, "error expected but not returned")
+			ft.Implies(tc.status == quit, msg == "", "message has to be \"\" since quit is requested")
+			ft.Only(tc.status != quit)
+			ft.Nil(err, "no error expected but was returned")
+			ft.Implies(tc.status == fail, msg != "", "expected failure but passed")
+			ft.Only(tc.status == ok)
+			ft.Equals("", msg)
+			ft.Equals(tc.pos, pos)
 		})
 	}
 }
