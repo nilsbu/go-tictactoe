@@ -7,7 +7,7 @@ import (
 
 	"github.com/nilsbu/fastest"
 
-	b "github.com/nilsbu/go-tictactoe/board"
+	b "github.com/nilsbu/tictactoe/board"
 )
 
 const noWinner b.Player = -1

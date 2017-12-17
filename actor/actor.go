@@ -1,6 +1,6 @@
 package actor
 
-import b "github.com/nilsbu/go-tictactoe/board"
+import b "github.com/nilsbu/tictactoe/board"
 
 // Actor is an interface that represents a player in a game.
 // It can be a human or computer.

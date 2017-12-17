@@ -1,7 +1,7 @@
 package actor
 
 import (
-	b "github.com/nilsbu/go-tictactoe/board"
+	b "github.com/nilsbu/tictactoe/board"
 )
 
 const maxDepth = 6

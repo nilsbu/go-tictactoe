@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	b "github.com/nilsbu/go-tictactoe/board"
+	b "github.com/nilsbu/tictactoe/board"
 )
 
 // IO bundles calls to input and output.

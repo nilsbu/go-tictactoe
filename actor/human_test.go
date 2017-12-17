@@ -6,7 +6,7 @@ import (
 
 	"github.com/nilsbu/fastest"
 
-	m "github.com/nilsbu/go-tictactoe/board"
+	m "github.com/nilsbu/tictactoe/board"
 )
 
 type moveCode int

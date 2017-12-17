@@ -6,9 +6,9 @@ import (
 
 	"github.com/nilsbu/fastest"
 
-	a "github.com/nilsbu/go-tictactoe/actor"
-	b "github.com/nilsbu/go-tictactoe/board"
-	"github.com/nilsbu/go-tictactoe/io"
+	a "github.com/nilsbu/tictactoe/actor"
+	b "github.com/nilsbu/tictactoe/board"
+	"github.com/nilsbu/tictactoe/io"
 )
 
 func TestSymbols(t *testing.T) {

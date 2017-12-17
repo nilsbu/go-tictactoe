@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	g "github.com/nilsbu/go-tictactoe/game"
+	g "github.com/nilsbu/tictactoe/game"
 )
 
 func main() {
